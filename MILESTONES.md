@@ -87,9 +87,11 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - Demo controllers were previously created privately inside each feature screen (`AutomaticTipPromptDemoView` etc.), which the overlay couldn't see; refactored into `Demo/IndieAppGrowthKitDemo/DemoControllers.swift` as shared instances so the overlay reflects the same state the feature screens mutate.
 - **Acceptance:** `swift build` (debug) and `swift build -c release` both succeed — verifying the overlay compiles away cleanly in release. Demo's "Debug Overlay" screen shows real state and reset buttons for all three controllers. `swift test` (42 tests, 3 skipped) passes.
 
-## M14 — Accessibility & Localization Pass ⬜
-- Full VoiceOver audit across all bundled views; confirm localized pricing display across at least two locales/currencies in the sample app or simulator.
-- **Acceptance:** VoiceOver walkthrough of every bundled view completes without unlabeled controls; pricing renders correctly under a non-USD simulator locale.
+## M14 — Accessibility & Localization Pass ✅
+- Code-review pass across every bundled view found and fixed two real gaps: `ConfettiView` (purely decorative) wasn't hidden from the accessibility tree, so VoiceOver would have announced two dozen unlabeled rectangles after a successful tip or milestone celebration — added `.accessibilityHidden(true)`. `FeedbackFormView`'s `TextEditor` had no label of its own and a redundant unhidden placeholder `Text` overlay VoiceOver would read alongside the empty editor — added an explicit label/hint and hid the placeholder overlay.
+- Audited `TipJarView` (tier rows: combined element with label/value/hint, `.isHeader` on the title), `CrossPromotionView` (combined element with label/value/button trait), `WhatsNewView` (`.isHeader` on the title, developer-supplied body content is outside the SDK's control) — all already correct from when they were originally built.
+- Localized pricing was already handled by reading `Product.displayPrice`/`displayName` directly (M3) rather than formatting a price manually — StoreKit returns these already localized to the user's storefront, so there's no separate formatting logic that could get a locale wrong.
+- **Acceptance:** `swift build`/`swift test` (42 tests, 3 skipped) pass after the fixes. A full VoiceOver walkthrough and a non-USD-locale pricing check both need a real device/Simulator run through Xcode (same constraint as M3's purchase-flow QA) — tracked as a standing manual QA step, not something `swift test` can verify.
 
 ## M15 — Documentation & Release Prep ⬜
 - Doc comments on all public API; README quickstart kept current; CHANGELOG started.

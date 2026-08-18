@@ -26,6 +26,8 @@ public struct FeedbackFormView: View {
                 .frame(minHeight: 120)
                 .font(theme.typography.body)
                 .foregroundStyle(theme.colors.primaryText)
+                .accessibilityLabel(Text(theme.strings.feedbackFormTitle))
+                .accessibilityHint(Text(theme.strings.feedbackFormPlaceholder))
                 .overlay(alignment: .topLeading) {
                     if text.isEmpty {
                         Text(theme.strings.feedbackFormPlaceholder)
@@ -34,6 +36,7 @@ public struct FeedbackFormView: View {
                             .padding(.top, 8)
                             .padding(.leading, 5)
                             .allowsHitTesting(false)
+                            .accessibilityHidden(true)
                     }
                 }
                 .padding(theme.metrics.padding / 2)
