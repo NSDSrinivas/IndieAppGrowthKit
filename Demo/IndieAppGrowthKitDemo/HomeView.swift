@@ -22,7 +22,9 @@ struct HomeView: View {
                         .navigationTitle("Tip Jar")
                     }
                     TipHistoryRow()
-                    FeatureRow(title: "Automatic Tip Prompt", milestone: "M6", status: .planned)
+                    NavigationLink("Automatic Tip Prompt") {
+                        AutomaticTipPromptDemoView()
+                    }
                 }
                 Section("Growth") {
                     FeatureRow(title: "Share App", milestone: "M7", status: .planned)
