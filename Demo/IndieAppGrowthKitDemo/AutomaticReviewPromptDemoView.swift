@@ -5,7 +5,7 @@ import IndieAppGrowthKit
 /// review prompt (with its review -> feedback pre-prompt fallback, M9) fires
 /// the moment this screen appears.
 struct AutomaticReviewPromptDemoView: View {
-    private let controller = AutomaticReviewPromptController(conditions: [.launchCount(atLeast: 1)])
+    private let controller = DemoControllers.reviewPrompt
     @State private var showingFeedbackForm = false
 
     var body: some View {

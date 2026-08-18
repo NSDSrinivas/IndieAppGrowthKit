@@ -39,4 +39,17 @@ public actor WhatsNewController {
     public func reset() {
         userDefaults.removeObject(forKey: Self.storageKey)
     }
+
+    /// Live state, for the debug overlay (M13).
+    public func debugInfo() -> WhatsNewDebugInfo {
+        WhatsNewDebugInfo(
+            lastSeenVersion: userDefaults.string(forKey: Self.storageKey),
+            currentVersion: currentVersionProvider()
+        )
+    }
+}
+
+public struct WhatsNewDebugInfo: Equatable, Sendable {
+    public let lastSeenVersion: String?
+    public let currentVersion: String?
 }

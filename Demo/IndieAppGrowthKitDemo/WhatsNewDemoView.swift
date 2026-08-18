@@ -7,7 +7,7 @@ import IndieAppGrowthKit
 /// behavior demonstrable: it shows the first time, then never again for
 /// version "1.0" until you tap "Reset" (simulating a version bump).
 struct WhatsNewDemoView: View {
-    private let controller = WhatsNewController(currentVersion: { "1.0" })
+    private let controller = DemoControllers.whatsNew
 
     var body: some View {
         VStack(spacing: 16) {
