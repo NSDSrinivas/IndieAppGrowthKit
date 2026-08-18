@@ -1,10 +1,11 @@
 import SwiftUI
 
-/// Full look-and-feel configuration for every view the SDK bundles — colors,
-/// typography, shape/spacing, and all user-facing copy. Every bundled view
-/// reads its appearance from a `TipJarTheme` (via the `\.tipJarTheme`
-/// environment value) rather than hardcoding any of it, so a host app can
-/// restyle the SDK's UI to match its own design system.
+/// Full look-and-feel configuration for every view the SDK bundles (not just
+/// the Tip Jar — the name predates the Feedback form etc., kept for API
+/// stability) — colors, typography, shape/spacing, and all user-facing copy.
+/// Every bundled view reads its appearance from a `TipJarTheme` (via the
+/// `\.tipJarTheme` environment value) rather than hardcoding any of it, so a
+/// host app can restyle the SDK's UI to match its own design system.
 public struct TipJarTheme: Equatable, Sendable {
     public struct Colors: Equatable, Sendable {
         public var background: Color
@@ -61,17 +62,26 @@ public struct TipJarTheme: Equatable, Sendable {
         public var tipJarSubtitle: String
         public var purchaseButtonTitle: String
         public var poweredByText: String
+        public var feedbackFormTitle: String
+        public var feedbackFormPlaceholder: String
+        public var feedbackFormSubmitButtonTitle: String
 
         public init(
             tipJarTitle: String,
             tipJarSubtitle: String,
             purchaseButtonTitle: String,
-            poweredByText: String
+            poweredByText: String,
+            feedbackFormTitle: String = "Send Feedback",
+            feedbackFormPlaceholder: String = "Tell us what's on your mind…",
+            feedbackFormSubmitButtonTitle: String = "Submit"
         ) {
             self.tipJarTitle = tipJarTitle
             self.tipJarSubtitle = tipJarSubtitle
             self.purchaseButtonTitle = purchaseButtonTitle
             self.poweredByText = poweredByText
+            self.feedbackFormTitle = feedbackFormTitle
+            self.feedbackFormPlaceholder = feedbackFormPlaceholder
+            self.feedbackFormSubmitButtonTitle = feedbackFormSubmitButtonTitle
         }
     }
 

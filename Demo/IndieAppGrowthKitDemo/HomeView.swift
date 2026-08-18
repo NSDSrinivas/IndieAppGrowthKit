@@ -34,7 +34,18 @@ struct HomeView: View {
                     NavigationLink("Automatic Review Prompt") {
                         AutomaticReviewPromptDemoView()
                     }
-                    FeatureRow(title: "Send Feedback", milestone: "M9", status: .planned)
+                    Button("Send Feedback (mail composer, real)") {
+                        FeedbackMail.openComposer(
+                            to: "support@example.com",
+                            subject: "Feedback",
+                            body: FeedbackMail.diagnosticsBody()
+                        )
+                    }
+                    NavigationLink("Send Feedback (bundled form)") {
+                        FeedbackFormView { text in
+                            print("Feedback submitted: \(text)")
+                        }
+                    }
                     FeatureRow(title: "Cross-Promotion", milestone: "M10", status: .planned)
                     FeatureRow(title: "Simulate Milestone", milestone: "M11", status: .planned)
                     FeatureRow(title: "What's New", milestone: "M12", status: .planned)
