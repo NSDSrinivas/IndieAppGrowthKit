@@ -51,6 +51,9 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 ### App Store Review Prompt
 - Provide an optional hook to trigger Apple's `SKStoreReviewController` review prompt after a successful tip, since a completed tip is a natural moment of goodwill to ask for a review. Off by default; host app opts in.
 - Expose that hook as a standalone public API (e.g. `IndieTipsSDK.requestReview()`) that the host app can call directly at any time, not only via the automatic post-tip trigger — so devs can invoke the review prompt from their own logic/timing if they don't want the automatic behavior.
+- Provide the same opt-in automatic-trigger engine used for tip prompts (see Automatic Tip Prompt Triggers below) for the review prompt, using an independently configured set of conditions — launch count, days since install, days since last review prompt, session count, and custom developer signals (e.g. "after successful tip", "after N successful tips") — so devs can drive review requests off different thresholds than tip prompts.
+- Track the review prompt's own state (launch count, install date, last-prompted date) separately from the tip prompt engine's state, since the two are configured and triggered independently.
+- Respect Apple's system-level rate limit on `SKStoreReviewController` (a maximum of a few prompts per 365-day rolling window, enforced by iOS itself, outside the SDK's control) — the SDK's own cooldown is an additional, developer-configurable throttle on top of that, not a replacement for it.
 
 ### Automatic Tip Prompt Triggers
 - Provide an opt-in engagement engine that automatically presents the bundled Tip Jar UI when developer-defined conditions are met, so devs don't have to hand-roll their own launch-counting/timing logic.
@@ -67,7 +70,7 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - Respect the same theming/customization requirements as the rest of the bundled UI when auto-presented.
 
 ### Analytics / Callbacks
-- Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled, automatic prompt shown, automatic prompt dismissed — so host apps can log analytics or show thank-you messaging.
+- Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled, automatic tip prompt shown, automatic tip prompt dismissed, automatic review prompt triggered — so host apps can log analytics or show thank-you messaging.
 
 ## Non-Functional Requirements
 
