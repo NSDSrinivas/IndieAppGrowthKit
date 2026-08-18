@@ -15,13 +15,15 @@ swift run IndieAppGrowthKitDemo
 - `IndieAppGrowthKitDemo/DemoApp.swift` — app entry point; calls `IndieAppGrowthKit.configure(...)`.
 - `IndieAppGrowthKitDemo/HomeView.swift` — one row per feature, linking to the milestone that implements it. Rows are wired up to the real API as each milestone lands.
 
-## StoreKit local testing
+## Purchase engine (M1)
 
-Purchase-flow testing (tip tiers, custom amount) needs a StoreKit configuration file and, for the most reliable results, an Xcode scheme with that configuration attached rather than a plain `swift run`. Once M1 (Purchase Engine Core) lands:
+The "Purchase Engine (real)" row on the home screen calls `IndieAppGrowthKit.tipStore.start()` and lets you buy one of the configured tip products. `Product`/`Transaction` can only be exercised against a real (possibly local-test) StoreKit environment — there's no way to fake a purchase outside of one — and `swift run` from the CLI isn't an entitled StoreKit host, so `start()` will report 0 products loaded when run that way. To exercise real purchases:
 
 1. Add `Demo.storekit` here with the same product identifiers configured in `DemoApp.swift`.
 2. Open the package in Xcode (`open Package.swift`), select the `IndieAppGrowthKitDemo` scheme, and set its StoreKit configuration (Scheme → Options → StoreKit Configuration) to `Demo.storekit`.
 3. Run from Xcode to exercise real purchase flows without hitting the App Store sandbox.
+
+The same constraint applies to the SDK's own test suite: `Tests/IndieAppGrowthKitTests/TipStoreStoreKitTestTests.swift` exercises the real purchase/restore paths via `SKTestSession`, and skips itself with a clear message when run outside Xcode rather than failing.
 
 ## iOS testing
 
