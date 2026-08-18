@@ -48,6 +48,13 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 ### Tip History
 - Expose an API to query the current user's tipping history from local StoreKit transaction data, e.g. whether they have tipped before and their total lifetime tip amount, so host apps can show a thank-you badge or small perk without needing a server.
 
+### Share App Hook
+- Provide a standalone public API (e.g. `IndieTipsSDK.shareApp()`) that presents the native system share sheet (`UIActivityViewController` on iOS, `NSSharingServicePicker` on macOS) pre-populated with the app's App Store link, so the user can share it via Messages, email, social media, AirDrop, or any other share-sheet destination they have installed.
+- The host app calls this hook explicitly from its own UI (e.g. a "Tell a friend" / "Share this app" row in a Settings screen) — this hook has no automatic-trigger engine of its own, unlike the tip and review prompts.
+- The App Store link/ID is provided by the host app as part of SDK configuration; the SDK constructs the shareable App Store URL from it.
+- Support an optional developer-supplied share message/text and, on iOS/iPadOS, accept the presenting view/anchor needed for popover presentation on iPad.
+- Emit a callback/publisher indicating the share sheet's outcome (completed, cancelled, failed) where the platform APIs make that information available, for analytics purposes.
+
 ### App Store Review Prompt
 - Provide an optional hook to trigger Apple's `SKStoreReviewController` review prompt after a successful tip, since a completed tip is a natural moment of goodwill to ask for a review. Off by default; host app opts in.
 - Expose that hook as a standalone public API (e.g. `IndieTipsSDK.requestReview()`) that the host app can call directly at any time, not only via the automatic post-tip trigger — so devs can invoke the review prompt from their own logic/timing if they don't want the automatic behavior.
@@ -70,7 +77,7 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - Respect the same theming/customization requirements as the rest of the bundled UI when auto-presented.
 
 ### Analytics / Callbacks
-- Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled, automatic tip prompt shown, automatic tip prompt dismissed, automatic review prompt triggered — so host apps can log analytics or show thank-you messaging.
+- Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled, automatic tip prompt shown, automatic tip prompt dismissed, automatic review prompt triggered, share app completed/cancelled/failed — so host apps can log analytics or show thank-you messaging.
 
 ## Non-Functional Requirements
 
