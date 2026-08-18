@@ -27,7 +27,7 @@ struct HomeView: View {
                     }
                 }
                 Section("Growth") {
-                    FeatureRow(title: "Share App", milestone: "M7", status: .planned)
+                    ShareAppButton(appStoreID: "0000000000", message: "Check out this app!")
                     FeatureRow(title: "Request Review", milestone: "M8", status: .planned)
                     FeatureRow(title: "Send Feedback", milestone: "M9", status: .planned)
                     FeatureRow(title: "Cross-Promotion", milestone: "M10", status: .planned)

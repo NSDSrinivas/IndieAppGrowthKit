@@ -49,9 +49,10 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - The engine is injectable (constructor takes an `AutomaticTriggerEngine`, not raw `UserDefaults`) — this also sidesteps a Swift 6 strict-concurrency false positive (`sending risks causing data races`) that showed up when passing `UserDefaults` directly across an actor-init boundary, and gives tests a clean way to inject a fake-clock engine.
 - **Acceptance:** `AutomaticTipPromptControllerTests.swift` covers condition-not-met, condition-met, and prompt-shown/dismiss state updates. The demo's "Automatic Tip Prompt" row uses a trivially-true condition (`launchCount(atLeast: 1)`) so the prompt fires immediately on appear, without needing to wait out real launch counts — full debug-overlay-based verification of realistic thresholds is tracked at M13.
 
-## M7 — Share App Hook ⬜
-- `shareApp()` presenting the native share sheet with the App Store link, optional custom message, iPad popover anchor, outcome callback.
-- **Acceptance:** Manual test on iPhone and iPad (popover positioning) in the sample app; share completion/cancellation callback verified.
+## M7 — Share App Hook ✅
+- `ShareAppButton<Label>` (`Sources/IndieAppGrowthKit/Sharing/ShareAppButton.swift`), built on SwiftUI's `ShareLink` rather than a hand-rolled `UIActivityViewController`/`NSSharingServicePicker` wrapper — gets correct cross-platform behavior and iPad popover anchoring for free. `AppStoreLink.url(forAppStoreID:)` builds the shareable URL.
+- **Scope change found during implementation:** `ShareLink` has no public completion callback for the share sheet's outcome on either platform today. REQUIREMENTS.md updated to descope the outcome callback rather than fake it with a private-API workaround; the corresponding analytics event was removed from the Analytics/Callbacks list.
+- **Acceptance:** `ShareAppButtonTests.swift` covers URL construction. The demo's Growth section has a real `ShareAppButton`; `swift build`/`swift run` succeed. Full iPad popover-anchoring verification needs a real iPad/Simulator run, tracked as a manual QA step (same category as the M3 purchase-flow QA step) rather than something `swift test` can verify.
 
 ## M8 — App Store Review Prompt ⬜
 - `requestReview()` standalone API + automatic trigger via M5 with independent state/conditions.
