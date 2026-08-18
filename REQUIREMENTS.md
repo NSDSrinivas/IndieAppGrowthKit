@@ -50,11 +50,11 @@ Indie App Growth Kit (Swift API namespace: `IndieAppGrowthKit`) is a Swift SDK t
 - Expose an API to query the current user's tipping history from local StoreKit transaction data, e.g. whether they have tipped before and their total lifetime tip amount, so host apps can show a thank-you badge or small perk without needing a server.
 
 ### Share App Hook
-- Provide a standalone public API (e.g. `IndieAppGrowthKit.shareApp()`) that presents the native system share sheet (`UIActivityViewController` on iOS, `NSSharingServicePicker` on macOS) pre-populated with the app's App Store link, so the user can share it via Messages, email, social media, AirDrop, or any other share-sheet destination they have installed.
-- The host app calls this hook explicitly from its own UI (e.g. a "Tell a friend" / "Share this app" row in a Settings screen) — this hook has no automatic-trigger engine of its own, unlike the tip and review prompts.
-- The App Store link/ID is provided by the host app as part of SDK configuration; the SDK constructs the shareable App Store URL from it.
-- Support an optional developer-supplied share message/text and, on iOS/iPadOS, accept the presenting view/anchor needed for popover presentation on iPad.
-- Emit a callback/publisher indicating the share sheet's outcome (completed, cancelled, failed) where the platform APIs make that information available, for analytics purposes.
+- Provide a standalone public API (`ShareAppButton`, a SwiftUI view built on `ShareLink`) that presents the native system share sheet (`UIActivityViewController` on iOS, `NSSharingServicePicker` on macOS, both driven by SwiftUI directly — no hand-rolled representable wrapper) pre-populated with the app's App Store link, so the user can share it via Messages, email, social media, AirDrop, or any other share-sheet destination they have installed.
+- The host app places this control explicitly in its own UI (e.g. a "Tell a friend" / "Share this app" row in a Settings screen) — this hook has no automatic-trigger engine of its own, unlike the tip and review prompts.
+- The App Store ID is passed in directly (`ShareAppButton(appStoreID:)`); the SDK constructs the shareable App Store URL from it.
+- Support an optional developer-supplied share message/text. iPad popover anchoring is handled automatically by `ShareLink`/the system, with no anchor parameter needed from the host app.
+- **Platform constraint found during implementation:** SwiftUI's `ShareLink` does not expose a completion callback for the share sheet's outcome — there's no public API for it on iOS/macOS today. This requirement is satisfied only where the platform makes that information available, which currently it doesn't; descoped rather than faked with an unreliable private-API workaround.
 
 ### App Store Review Prompt
 - Provide an optional hook to trigger Apple's `SKStoreReviewController` review prompt after a successful tip, since a completed tip is a natural moment of goodwill to ask for a review. Off by default; host app opts in.
@@ -98,7 +98,7 @@ Indie App Growth Kit (Swift API namespace: `IndieAppGrowthKit`) is a Swift SDK t
 - State (last-seen version) persisted locally on-device only. Off by default; host app opts in and supplies content.
 
 ### Analytics / Callbacks
-- Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled, automatic tip prompt shown, automatic tip prompt dismissed, automatic review prompt triggered, share app completed/cancelled/failed, feedback requested/submitted, cross-promotion app tapped, milestone celebrated, what's new shown — so host apps can log analytics or show thank-you messaging.
+- Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled, automatic tip prompt shown, automatic tip prompt dismissed, automatic review prompt triggered, feedback requested/submitted, cross-promotion app tapped, milestone celebrated, what's new shown — so host apps can log analytics or show thank-you messaging. (Share app has no outcome event — see Share App Hook above.)
 
 ## Non-Functional Requirements
 
