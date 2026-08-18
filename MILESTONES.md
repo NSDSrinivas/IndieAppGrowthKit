@@ -76,9 +76,10 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - **Design choice**: rather than a hardcoded "celebration + tip nudge + review nudge" combo API, celebration optionally reports a named custom signal to the existing M6/M8 controllers, which already support `.customSignal(_:)` conditions — so a host app composes celebration, tip nudges, and review nudges as independently-configurable pieces instead of one rigid bundled flow.
 - **Acceptance:** Demo's "Simulate Milestone (confetti + haptic, real)" button fires a real celebration via the modifier. `swift build`/`swift test` (37 tests, 3 skipped) pass.
 
-## M12 — What's New Prompt ⬜
-- Once-per-version card wired to M5's trigger engine (version-change condition), themed, developer-supplied content.
-- **Acceptance:** Sample app shows the card on a simulated version bump and not again on subsequent launches at the same version.
+## M12 — What's New Prompt ✅
+- `WhatsNewController` (`Sources/IndieAppGrowthKit/WhatsNew/WhatsNewController.swift`): standalone controller (not built on `AutomaticTriggerEngine` — it tracks a single version string, not counts/dates/signals, so the generic engine's state shape doesn't fit) comparing `CFBundleShortVersionString` against the last-shown version, persisted via `UserDefaults`.
+- `WhatsNewView` (themed chrome, fully developer-supplied content via view builder since it's inherently version-specific) + `View.automaticWhatsNew(controller:title:content:)` presents it as a sheet at most once per version.
+- **Acceptance:** `WhatsNewControllerTests.swift` (5 tests) covers first-show, no-repeat, version-bump-shows-again, unknown-version-never-shows, and reset. Demo's "What's New" screen (with an injected fixed version, since `Bundle.main` has no version info under bare `swift run`) demonstrates once-per-version behavior with a manual reset button. `swift build`/`swift test` (42 tests, 3 skipped) pass.
 
 ## M13 — Debug Overlay ⬜
 - Debug-only overlay showing live trigger-engine state for all features (launch count, days since install/last-prompt, dismiss count, enabled state) with reset/simulate controls; stripped from release builds.
