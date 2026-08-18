@@ -12,11 +12,29 @@ See [REQUIREMENTS.md](REQUIREMENTS.md) for the full feature spec.
 
 ## Installation
 
-Add Indie App Growth Kit to your project via Swift Package Manager:
+Add Indie App Growth Kit to your project via Swift Package Manager.
+
+In Xcode: File → Add Package Dependencies… and enter:
 
 ```
-https://github.com/<your-org>/IndieAppGrowthKit
+https://github.com/NSDSrinivas/IndieAppGrowthKit.git
 ```
+
+Or add it to another package's `Package.swift`:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", branch: "main")
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: ["IndieAppGrowthKit"]
+    )
+]
+```
+
+This is a private repository, so SPM will prompt you to authenticate with GitHub (via your Xcode-linked account or SSH key) the first time you resolve it.
 
 ## Quickstart
 
