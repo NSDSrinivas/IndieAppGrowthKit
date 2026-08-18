@@ -15,7 +15,12 @@ struct HomeView: View {
             List {
                 Section("Tipping") {
                     PurchaseEngineRow(state: purchaseState)
-                    FeatureRow(title: "Bundled Tip Jar UI", milestone: "M3", status: .planned)
+                    NavigationLink("Bundled Tip Jar UI") {
+                        TipJarView(store: IndieAppGrowthKit.tipStore) { completion in
+                            print("Tip Jar completion: \(completion)")
+                        }
+                        .navigationTitle("Tip Jar")
+                    }
                     FeatureRow(title: "Tip History", milestone: "M4", status: .planned)
                     FeatureRow(title: "Automatic Tip Prompt", milestone: "M6", status: .planned)
                 }

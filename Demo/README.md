@@ -14,14 +14,15 @@ swift run IndieAppGrowthKitDemo
 
 - `IndieAppGrowthKitDemo/DemoApp.swift` — app entry point; calls `IndieAppGrowthKit.configure(...)`.
 - `IndieAppGrowthKitDemo/HomeView.swift` — one row per feature, linking to the milestone that implements it. Rows are wired up to the real API as each milestone lands.
+- `IndieAppGrowthKitDemo/ThemePreviewView.swift` — the M2 "Theme Switcher" screen.
+- `Demo.storekit` — local StoreKit product catalog matching the identifiers in `DemoApp.swift`.
 
-## Purchase engine (M1)
+## Purchase engine (M1) and Tip Jar UI (M3)
 
-The "Purchase Engine (real)" row on the home screen calls `IndieAppGrowthKit.tipStore.start()` and lets you buy one of the configured tip products. `Product`/`Transaction` can only be exercised against a real (possibly local-test) StoreKit environment — there's no way to fake a purchase outside of one — and `swift run` from the CLI isn't an entitled StoreKit host, so `start()` will report 0 products loaded when run that way. To exercise real purchases:
+The "Purchase Engine (real)" row and the "Bundled Tip Jar UI" row both call into the real `IndieAppGrowthKit.tipStore`. `Product`/`Transaction` can only be exercised against a real (possibly local-test) StoreKit environment — there's no way to fake a purchase outside of one — and `swift run` from the CLI isn't an entitled StoreKit host, so product loading will report 0 products when run that way. To exercise real purchases:
 
-1. Add `Demo.storekit` here with the same product identifiers configured in `DemoApp.swift`.
-2. Open the package in Xcode (`open Package.swift`), select the `IndieAppGrowthKitDemo` scheme, and set its StoreKit configuration (Scheme → Options → StoreKit Configuration) to `Demo.storekit`.
-3. Run from Xcode to exercise real purchase flows without hitting the App Store sandbox.
+1. Open the package in Xcode (`open Package.swift`), select the `IndieAppGrowthKitDemo` scheme, and set its StoreKit configuration (Scheme → Options → StoreKit Configuration) to `Demo.storekit` (already checked in here).
+2. Run from Xcode to exercise real purchase flows, including the bundled Tip Jar UI, without hitting the App Store sandbox.
 
 The same constraint applies to the SDK's own test suite: `Tests/IndieAppGrowthKitTests/TipStoreStoreKitTestTests.swift` exercises the real purchase/restore paths via `SKTestSession`, and skips itself with a clear message when run outside Xcode rather than failing.
 
