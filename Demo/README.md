@@ -12,15 +12,18 @@ swift run IndieAppGrowthKitDemo
 
 **iOS Simulator (recommended — real StoreKit purchases, real device sizing):**
 
-An Xcode project isn't checked in; it's generated from `Demo/project.yml` via [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`):
+An Xcode project isn't checked in; it's generated from `Demo/project.yml` via [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
-```
-cd Demo
-xcodegen generate
-open IndieAppGrowthKitDemo.xcodeproj
-```
+1. Install XcodeGen (one-time): `brew install xcodegen`
+2. Generate the project:
+   ```
+   cd Demo
+   xcodegen generate
+   ```
+3. Open it: `open IndieAppGrowthKitDemo.xcodeproj`
+4. In Xcode, select the `IndieAppGrowthKitDemo` scheme and an iOS Simulator destination, then Run (`⌘R`).
 
-Then run the `IndieAppGrowthKitDemo` scheme on an iOS Simulator. The scheme already points its StoreKit Configuration at `Demo.storekit`, so purchases/tips work out of the box. Re-run `xcodegen generate` after editing `project.yml` or adding/removing source files; the generated `.xcodeproj` is gitignored.
+The scheme already points its StoreKit Configuration at `Demo.storekit`, so purchases/tips work out of the box — no extra setup needed. Re-run `xcodegen generate` after editing `project.yml` or adding/removing source files under `IndieAppGrowthKitDemo/`; the generated `.xcodeproj` is gitignored, so it must be regenerated after a fresh clone.
 
 ## Structure
 
