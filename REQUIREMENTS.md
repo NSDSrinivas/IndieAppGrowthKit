@@ -15,7 +15,7 @@ Indie App Growth Kit (Swift API namespace: `IndieAppGrowthKit`) is a Swift SDK t
 
 - iOS 18+
 - macOS 15+
-- Swift 5.7+
+- Swift 6.0+
 - Distribution: Swift Package Manager (SPM)
 
 ## Functional Requirements
