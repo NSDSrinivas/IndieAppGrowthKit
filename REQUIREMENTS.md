@@ -29,7 +29,10 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 
 ### UI
 - Provide a pre-built SwiftUI "Tip Jar" view that lists available tip tiers and lets the user pick and confirm one.
-- Support light/dark mode and Dynamic Type.
+- The bundled UI's look and feel must be fully customizable by the host app, including at minimum: colors (background, accent, text), typography/fonts, corner radius/shape, spacing/layout, button styles, and tier card content (title, subtitle, icon/emoji per tier).
+- Customization is expressed via a theme/style configuration object (or SwiftUI `ViewModifier`/environment-based styling) passed into the bundled view, with sensible defaults so theming is opt-in.
+- Support fully custom per-element rendering via SwiftUI view builders (e.g. custom tier row content, custom call-to-action button), not just color/font tokens, so a host app can restyle the UI to match its own design system.
+- Support light/dark mode and Dynamic Type, including when custom theming is applied.
 - Emit a completion callback/closure or async result indicating success, cancellation, or failure, so the host app can show its own confirmation UI if desired.
 - Allow developers to use just the underlying purchase API without the bundled UI.
 
@@ -59,4 +62,4 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 
 - Minimum supported OS version — confirm iOS 15 / macOS 12 is acceptable, or whether older versions (needing StoreKit 1 fallback) must be supported.
 - Whether a later version should add server-side receipt verification for fraud protection.
-- Branding/theming requirements for the bundled UI (colors, fonts, logo placement).
+- Exact shape of the theming API (struct-based style tokens vs. SwiftUI environment values vs. view-builder injection, or a combination).
