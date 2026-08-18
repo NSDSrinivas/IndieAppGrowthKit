@@ -5,10 +5,7 @@ import IndieAppGrowthKit
 /// so the automatic prompt fires the moment this screen appears, without
 /// waiting on real launch counts across app restarts.
 struct AutomaticTipPromptDemoView: View {
-    private let controller = AutomaticTipPromptController(
-        conditions: [.launchCount(atLeast: 1)],
-        tipStore: IndieAppGrowthKit.tipStore
-    )
+    private let controller = DemoControllers.tipPrompt
     @State private var lastCompletion: String?
 
     var body: some View {

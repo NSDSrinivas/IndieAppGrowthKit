@@ -81,9 +81,11 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - `WhatsNewView` (themed chrome, fully developer-supplied content via view builder since it's inherently version-specific) + `View.automaticWhatsNew(controller:title:content:)` presents it as a sheet at most once per version.
 - **Acceptance:** `WhatsNewControllerTests.swift` (5 tests) covers first-show, no-repeat, version-bump-shows-again, unknown-version-never-shows, and reset. Demo's "What's New" screen (with an injected fixed version, since `Bundle.main` has no version info under bare `swift run`) demonstrates once-per-version behavior with a manual reset button. `swift build`/`swift test` (42 tests, 3 skipped) pass.
 
-## M13 — Debug Overlay ⬜
-- Debug-only overlay showing live trigger-engine state for all features (launch count, days since install/last-prompt, dismiss count, enabled state) with reset/simulate controls; stripped from release builds.
-- **Acceptance:** Overlay visible in the sample app's debug build, absent in a release build; state resettable without reinstalling.
+## M13 — Debug Overlay ✅
+- `AutomaticTriggerDebugOverlay` (`Sources/IndieAppGrowthKit/UI/AutomaticTriggerDebugOverlay.swift`): shows live `TriggerState` (launch/session count, install/last-prompt date, dismiss count, custom signals) for the tip and review controllers, plus `WhatsNewController`'s last-seen/current version, each with a Reset button. Body is wrapped in `#if DEBUG` / renders `EmptyView()` otherwise, so it's genuinely stripped from release builds rather than just hidden by a flag.
+- `WhatsNewController.debugInfo()` added to expose its state for the overlay (it has no `AutomaticTriggerEngine` to piggyback on, per M12's design note).
+- Demo controllers were previously created privately inside each feature screen (`AutomaticTipPromptDemoView` etc.), which the overlay couldn't see; refactored into `Demo/IndieAppGrowthKitDemo/DemoControllers.swift` as shared instances so the overlay reflects the same state the feature screens mutate.
+- **Acceptance:** `swift build` (debug) and `swift build -c release` both succeed — verifying the overlay compiles away cleanly in release. Demo's "Debug Overlay" screen shows real state and reset buttons for all three controllers. `swift test` (42 tests, 3 skipped) passes.
 
 ## M14 — Accessibility & Localization Pass ⬜
 - Full VoiceOver audit across all bundled views; confirm localized pricing display across at least two locales/currencies in the sample app or simulator.

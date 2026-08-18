@@ -62,7 +62,14 @@ struct HomeView: View {
                     NavigationLink("Theme Switcher") {
                         ThemePreviewView()
                     }
-                    FeatureRow(title: "Debug Overlay", milestone: "M13", status: .planned)
+                    NavigationLink("Debug Overlay") {
+                        AutomaticTriggerDebugOverlay(
+                            tipController: DemoControllers.tipPrompt,
+                            reviewController: DemoControllers.reviewPrompt,
+                            whatsNewController: DemoControllers.whatsNew
+                        )
+                        .navigationTitle("Debug Overlay")
+                    }
                 }
             }
             .navigationTitle("IndieAppGrowthKit Demo")
