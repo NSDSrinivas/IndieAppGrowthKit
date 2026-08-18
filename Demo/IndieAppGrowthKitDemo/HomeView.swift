@@ -54,7 +54,9 @@ struct HomeView: View {
                         .navigationTitle("More Apps")
                     }
                     MilestoneCelebrationRow()
-                    FeatureRow(title: "What's New", milestone: "M12", status: .planned)
+                    NavigationLink("What's New") {
+                        WhatsNewDemoView()
+                    }
                 }
                 Section("Dev Tools") {
                     NavigationLink("Theme Switcher") {
