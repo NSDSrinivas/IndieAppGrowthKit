@@ -61,6 +61,21 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - Provide the same opt-in automatic-trigger engine used for tip prompts (see Automatic Tip Prompt Triggers below) for the review prompt, using an independently configured set of conditions — launch count, days since install, days since last review prompt, session count, and custom developer signals (e.g. "after successful tip", "after N successful tips") — so devs can drive review requests off different thresholds than tip prompts.
 - Track the review prompt's own state (launch count, install date, last-prompted date) separately from the tip prompt engine's state, since the two are configured and triggered independently.
 - Respect Apple's system-level rate limit on `SKStoreReviewController` (a maximum of a few prompts per 365-day rolling window, enforced by iOS itself, outside the SDK's control) — the SDK's own cooldown is an additional, developer-configurable throttle on top of that, not a replacement for it.
+- Support an optional "review → feedback" fallback flow: present a lightweight pre-prompt ("Enjoying the app?") before the system review prompt; on a negative response, route the user to the Feedback/Bug Report hook (see below) instead of the App Store review prompt, so unhappy users are funneled to private feedback rather than a public bad review. Off by default; host app opts in and supplies the pre-prompt copy or a custom view.
+
+### Feedback / Bug Report Hook
+- Provide a standalone public API (e.g. `IndieTipsSDK.requestFeedback()`) that lets the user send feedback directly to the developer, via a mail composer (`MFMailComposeViewController`/`NSSharingService` mail, pre-addressed to a developer-configured support email with device/app version info pre-filled) or a minimal bundled in-SDK feedback form as a lighter-weight alternative.
+- Callable directly by the host app at any time, and usable as the negative-response destination for the review prompt's "review → feedback" fallback flow described above.
+- Bundled feedback form (if used instead of mail) follows the same full theming requirements as the rest of the bundled UI, and its submission is handled entirely by the host app (e.g. via a completion callback with the entered text) — the SDK does not transmit feedback anywhere itself, consistent with making no network calls of its own.
+
+### Cross-Promotion Hook
+- Provide an API and optional bundled UI for a developer to promote their other apps within the host app, configured with a developer-supplied list of promoted apps (App Store ID, name, icon, tagline).
+- Tapping a promoted app opens its App Store listing (via `SKOverlay`/`SKStoreProductViewController` or a plain App Store URL).
+- Fully themeable consistent with the rest of the bundled UI; usable standalone (e.g. in a Settings screen) or as one more automatic-trigger-engine-eligible surface.
+
+### Milestone Celebration Hook
+- Generalize the Automatic Tip Prompt Triggers' "custom developer signal" into a small standalone, reusable celebration API (e.g. `IndieTipsSDK.celebrate(milestone:)`) that a host app can call for any in-app milestone or streak, not only tipping-related ones.
+- Reuses the same built-in success feedback (haptics/confetti) as a successful tip, and can optionally bundle a tip and/or review nudge alongside the celebration if the host app opts in, so a single milestone moment can prompt multiple engagement actions at once.
 
 ### Automatic Tip Prompt Triggers
 - Provide an opt-in engagement engine that automatically presents the bundled Tip Jar UI when developer-defined conditions are met, so devs don't have to hand-roll their own launch-counting/timing logic.
@@ -76,8 +91,13 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - The automatic prompt is fully optional and off by default; the host app must explicitly configure and enable it. Devs can also disable it and drive prompting entirely themselves via the manual UI/API.
 - Respect the same theming/customization requirements as the rest of the bundled UI when auto-presented.
 
+### What's New Prompt
+- Provide an opt-in "What's New" card/sheet shown at most once per app version, using the same automatic-trigger pattern as the tip and review prompts: it fires when the SDK detects the app's version has changed since the last recorded launch.
+- Content (title, bullet list of highlights, optional image) is developer-supplied per version; fully themeable consistent with the rest of the bundled UI.
+- State (last-seen version) persisted locally on-device only. Off by default; host app opts in and supplies content.
+
 ### Analytics / Callbacks
-- Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled, automatic tip prompt shown, automatic tip prompt dismissed, automatic review prompt triggered, share app completed/cancelled/failed — so host apps can log analytics or show thank-you messaging.
+- Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled, automatic tip prompt shown, automatic tip prompt dismissed, automatic review prompt triggered, share app completed/cancelled/failed, feedback requested/submitted, cross-promotion app tapped, milestone celebrated, what's new shown — so host apps can log analytics or show thank-you messaging.
 
 ## Non-Functional Requirements
 
@@ -86,6 +106,8 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - **Testability**: Core purchase logic must be unit-testable (abstract StoreKit behind a protocol so it can be mocked in tests).
 - **Documentation**: Public API must have doc comments; README with a quickstart example.
 - **Privacy**: SDK collects no user data and makes no network calls of its own (StoreKit calls go directly to Apple).
+- **Extension friendliness**: The core purchase API (tipping, tip history) must work correctly from app extensions and App Clips, not only the main app target, since indie devs increasingly ship these; automatic-trigger prompts and bundled UI are main-app-target only.
+- **Debug overlay**: Provide a debug-only, opt-in on-screen overlay (stripped from release builds) showing the live state of all automatic-trigger engines — launch count, days since install, days since last prompt, dismiss count, per-feature enabled/disabled state — so developers can verify their trigger configuration without waiting out real cooldown periods. Includes a way to reset/simulate state for testing.
 
 ## Out of Scope (v1)
 
