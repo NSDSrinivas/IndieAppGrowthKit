@@ -59,9 +59,12 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - `AutomaticReviewPromptController` (mirrors `AutomaticTipPromptController`, `"review"` namespace, independently configured conditions/state) + `View.automaticReviewPrompt(controller:prePromptTitle:prePromptMessage:onNegativeResponse:)` (`UI/AutomaticReviewPromptModifier.swift`): when `prePromptTitle` is supplied, shows an "Enjoying the app?" alert first — "Yes" calls `ReviewPrompt.request()`, "Not really" records a dismiss and calls `onNegativeResponse` (wired to the Feedback hook once M9 lands) instead of the system prompt.
 - **Acceptance:** `AutomaticReviewPromptControllerTests.swift` covers namespace independence from the tip controller, a custom-signal condition (e.g. gating review prompts on `.customSignal("successfulTip")`), and dismiss tracking. The demo's Growth section has a real "Request Review (manual, real)" button and an "Automatic Review Prompt" screen exercising the pre-prompt fallback. `swift build`/`swift run`/`swift test` all pass (33 tests, 3 gracefully skipped per the standing StoreKitTest constraint).
 
-## M9 — Feedback / Bug Report Hook ⬜
-- `requestFeedback()` via mail composer or bundled themed form; used standalone and as the M8 fallback destination.
-- **Acceptance:** Manual test of both mail-composer and bundled-form paths in the sample app; form submission callback delivers entered text to the host app.
+## M9 — Feedback / Bug Report Hook ✅
+- `FeedbackMail` (`Sources/IndieAppGrowthKit/Feedback/FeedbackMail.swift`): `openComposer(to:subject:body:)` opens the user's default mail app via a `mailto:` link, plus `diagnosticsBody(extra:)` prefilling app version/build/OS info. **Design choice, not `MFMailComposeViewController`**: a `mailto:` link needs no Message UI entitlement, works whenever *any* mail app is configured (not just Mail.app), and needs no `UIViewControllerRepresentable`/delegate bridge — smaller surface for bugs, at the cost of leaving the app rather than composing in-place.
+- `FeedbackFormView` (`UI/FeedbackFormView.swift`): the bundled in-app alternative, fully themed via the same `\.tipJarTheme` (now carrying feedback-form strings too — see theme note below), `onSubmit` handed the raw text with no network call of the SDK's own.
+- Wired as the review-prompt fallback destination in the demo (`AutomaticReviewPromptDemoView` now presents a real `FeedbackFormView` sheet instead of a placeholder).
+- **Theme note:** extended `TipJarTheme.Strings` with `feedbackFormTitle`/`feedbackFormPlaceholder`/`feedbackFormSubmitButtonTitle` rather than introducing a second theme type — `TipJarTheme` has effectively become the SDK-wide theme (name kept for API stability).
+- **Acceptance:** `FeedbackMailTests.swift` covers URL construction (percent-encoding) and diagnostics body content. Demo has real "Send Feedback (mail composer, real)" and "Send Feedback (bundled form)" rows, plus the wired review→feedback fallback. `swift build`/`swift test` (35 tests, 3 skipped) pass.
 
 ## M10 — Cross-Promotion Hook ⬜
 - API + themed bundled UI listing developer-configured other apps; taps open their App Store listings.
