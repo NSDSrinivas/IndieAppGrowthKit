@@ -4,6 +4,8 @@ This tracks the order features get built in, so each milestone lands on a tested
 
 Status legend: ⬜ not started · 🚧 in progress · ✅ done
 
+**All 15 milestones are done as of this writing.** What's left is the manual QA sweep flagged throughout (real purchase flows, VoiceOver walkthrough, non-USD pricing, iPad popover) — everything `swift test`/`swift build` can verify already passes.
+
 ## M0 — Project Scaffolding ✅
 - SPM package (`Package.swift`, iOS 18+/macOS 15+, Swift 6.0), README, LICENSE, `.gitignore`.
 - **Acceptance:** `swift build` and `swift test` succeed.
@@ -93,9 +95,12 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - Localized pricing was already handled by reading `Product.displayPrice`/`displayName` directly (M3) rather than formatting a price manually — StoreKit returns these already localized to the user's storefront, so there's no separate formatting logic that could get a locale wrong.
 - **Acceptance:** `swift build`/`swift test` (42 tests, 3 skipped) pass after the fixes. A full VoiceOver walkthrough and a non-USD-locale pricing check both need a real device/Simulator run through Xcode (same constraint as M3's purchase-flow QA) — tracked as a standing manual QA step, not something `swift test` can verify.
 
-## M15 — Documentation & Release Prep ⬜
-- Doc comments on all public API; README quickstart kept current; CHANGELOG started.
-- **Acceptance:** No public symbol without a doc comment (spot-checked); README quickstart matches the actual API surface.
+## M15 — Documentation & Release Prep ✅
+- **Bug found and fixed during this pass:** `Configuration.appStoreID` was captured at `configure(_:)` time but never actually read by anything — `ShareAppButton` and `PromotedApp` each took their own `appStoreID` parameter instead, silently duplicating what the host app had already configured. Fixed by adding `IndieAppGrowthKit.configuration` (mirroring `.tipStore`) and a `ShareAppButton(message:)` convenience init that reads `appStoreID` from it; the demo now uses the convenience init instead of repeating the ID.
+- README quickstart rewritten to match the real API surface (`TipJarView`, `ShareAppButton()`, `ReviewPrompt.request()`) and points to MILESTONES.md and the Demo app for the rest.
+- `CHANGELOG.md` added, covering every milestone's additions plus the known limitations discovered along the way (custom-amount tipping descoped, no share-outcome callback, StoreKitTest's Xcode-only constraint).
+- Doc comments spot-checked across all public types/entry points (every file added in M1–M14 was written with a doc comment on its primary type and public methods); per-field doc comments on simple struct properties like `TipJarTheme.Colors` were intentionally skipped where the field name is already self-explanatory, consistent with Swift convention.
+- **Acceptance:** `swift build` and `swift build -c release` both succeed. `swift test` passes (43 tests, 3 gracefully skipped per the standing StoreKitTest constraint). README quickstart verified against the actual public API.
 
 ---
 

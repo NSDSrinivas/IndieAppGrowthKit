@@ -23,6 +23,7 @@ https://github.com/<your-org>/IndieAppGrowthKit
 ```swift
 import IndieAppGrowthKit
 
+// Once at app launch:
 IndieAppGrowthKit.configure(
     .init(
         tipProductIdentifiers: ["com.yourapp.tip.small", "com.yourapp.tip.medium", "com.yourapp.tip.large"],
@@ -31,11 +32,19 @@ IndieAppGrowthKit.configure(
 )
 ```
 
-Then present the bundled Tip Jar view wherever makes sense in your app (e.g. a Settings screen).
+```swift
+// Wherever makes sense in your app (e.g. a Settings screen):
+TipJarView(store: IndieAppGrowthKit.tipStore)
+
+ShareAppButton()
+Button("Request Review") { ReviewPrompt.request() }
+```
+
+Every bundled view is fully themeable — see `TipJarTheme` and `.tipJarTheme(_:)`. See [MILESTONES.md](MILESTONES.md) for the full feature-by-feature build log, including every other hook (tip history, automatic prompts, feedback, cross-promotion, milestone celebrations, What's New, and the debug overlay), and `Demo/IndieAppGrowthKitDemo/` for a runnable example of all of them (`swift run IndieAppGrowthKitDemo`).
 
 ## Status
 
-This SDK is under active development. The public API is not yet stable.
+This SDK is under active development. The public API is not yet stable. See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

@@ -10,4 +10,13 @@ final class IndieAppGrowthKitTests: XCTestCase {
         XCTAssertEqual(config.tipProductIdentifiers, ["com.example.tip.small"])
         XCTAssertEqual(config.appStoreID, "123456789")
     }
+
+    func testConfigureExposesConfigurationAndTipStore() {
+        IndieAppGrowthKit.configure(
+            .init(tipProductIdentifiers: ["com.example.tip.small"], appStoreID: "987654321")
+        )
+        XCTAssertEqual(IndieAppGrowthKit.configuration.appStoreID, "987654321")
+        // Accessing tipStore shouldn't trap once configure(_:) has been called.
+        _ = IndieAppGrowthKit.tipStore
+    }
 }
