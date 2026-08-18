@@ -13,8 +13,8 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 
 ## Target Platforms
 
-- iOS 15+
-- macOS 12+
+- iOS 18+
+- macOS 15+
 - Swift 5.7+
 - Distribution: Swift Package Manager (SPM)
 
@@ -26,6 +26,8 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - Handle purchase flow: initiate purchase, listen for transaction updates, verify transaction, finish transaction.
 - Gracefully handle failure states: user cancellation, payment declined, network error, pending/deferred purchase (e.g. Ask to Buy).
 - Prevent duplicate/unfinished transactions from being lost (restore unfinished transactions on launch).
+- Support a "custom amount" tip tier (Apple's custom-amount In-App Purchase, available iOS 16.4+) in addition to preset tiers, letting the user enter their own tip amount.
+- Support testing tip flows locally against Xcode's `.storekit` configuration file, so devs can preview and test purchases without hitting the real App Store sandbox.
 
 ### UI
 - Provide a pre-built SwiftUI "Tip Jar" view that lists available tip tiers and lets the user pick and confirm one.
@@ -33,12 +35,21 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - Customization is expressed via a theme/style configuration object (or SwiftUI `ViewModifier`/environment-based styling) passed into the bundled view, with sensible defaults so theming is opt-in.
 - Support fully custom per-element rendering via SwiftUI view builders (e.g. custom tier row content, custom call-to-action button), not just color/font tokens, so a host app can restyle the UI to match its own design system.
 - Support light/dark mode and Dynamic Type, including when custom theming is applied.
+- Localized pricing display: tip tier prices are shown using StoreKit's localized price strings, correctly formatted for the user's currency/region.
+- Built-in success feedback on a completed tip (e.g. haptic feedback on iOS, a confetti/celebratory animation), enabled by default and customizable/overridable by the host app.
 - Emit a completion callback/closure or async result indicating success, cancellation, or failure, so the host app can show its own confirmation UI if desired.
 - Allow developers to use just the underlying purchase API without the bundled UI.
+- Accessibility: all interactive elements (tier cards, buttons, custom-amount field) expose VoiceOver labels, values, and hints; success/error states are announced via accessibility notifications.
 
 ### Configuration
 - Developer configures the SDK once at app launch with their set of product identifiers.
 - No server/backend required for v1 — all tipping is handled client-side via StoreKit.
+
+### Tip History
+- Expose an API to query the current user's tipping history from local StoreKit transaction data, e.g. whether they have tipped before and their total lifetime tip amount, so host apps can show a thank-you badge or small perk without needing a server.
+
+### App Store Review Prompt
+- Provide an optional hook to trigger Apple's `SKStoreReviewController` review prompt after a successful tip, since a completed tip is a natural moment of goodwill to ask for a review. Off by default; host app opts in.
 
 ### Analytics / Callbacks
 - Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled — so host apps can log analytics or show thank-you messaging.
@@ -56,7 +67,6 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - Subscription-based tipping / recurring tips.
 - Non-Apple platforms (Android, web).
 - Server-side receipt validation or a backend dashboard. All receipt/transaction verification is done on-device via StoreKit 2's built-in `VerificationResult`.
-- Custom/arbitrary tip amounts (only preset tiers) — may be considered for a later version.
 
 ## Open Questions
 
