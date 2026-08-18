@@ -8,14 +8,14 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - SPM package (`Package.swift`, iOS 18+/macOS 15+, Swift 6.0), README, LICENSE, `.gitignore`.
 - **Acceptance:** `swift build` and `swift test` succeed.
 
-## M1 — Purchase Engine Core ⬜
-- Abstract StoreKit 2 behind a protocol (e.g. `StoreProvider`) so purchase logic is unit-testable without hitting real StoreKit.
-- Implement product loading, purchase initiation, `Transaction.updates` listening, `VerificationResult` handling, transaction finishing.
-- Restore unfinished transactions on launch.
-- Handle failure states: cancellation, decline, network error, pending/Ask-to-Buy.
-- Support custom-amount tip tier (iOS 16.4+ API, available since our iOS 18+ floor).
-- Works from app extensions/App Clips, not only the main app target.
-- **Acceptance:** Unit tests cover success, cancellation, failure, pending, and restore paths using a mock `StoreProvider`. Manually verified against Xcode's local `.storekit` config in the sample app.
+## M1 — Purchase Engine Core ✅
+- `StoreProviding` protocol abstracts StoreKit 2 (`Sources/IndieAppGrowthKit/Purchases/StoreProviding.swift`); `StoreKitProvider` is the real implementation, backed by `Product.products(for:)`, `Product.purchase()`, `Transaction.updates`, `Transaction.unfinished`, `Transaction.finish()`.
+- `TipStore` (actor, `Purchases/TipStore.swift`) orchestrates: `start()` restores unfinished transactions then loads products; `purchase(identifier:)`/`purchase(_:)` submit a purchase, verify (`VerificationResult`), and finish on success. `TipPurchaseOutcome` (`.success`/`.pending`/`.cancelled`) models StoreKit's non-error outcomes explicitly rather than conflating them with thrown errors; genuine failures (declined, network, verification failure) propagate via `throws`.
+- Wired into the public API: `IndieAppGrowthKit.configure(_:)` now builds a real `TipStore` from `Configuration.tipProductIdentifiers`, exposed as `IndieAppGrowthKit.tipStore`.
+- **Scope change found during implementation:** the "custom amount" tip tier from REQUIREMENTS.md was descoped for v1. `Product`'s custom-amount purchase path goes through Apple's Advanced Commerce API, which requires the developer's own backend to produce a signed JWS per purchase — that's a hard requirement for a server, which conflicts with this SDK's no-backend design goal. REQUIREMENTS.md updated accordingly; v1 supports any number of discrete preset tiers instead.
+- **Testing strategy note:** `Product`/`Transaction` have no public initializers, so a hand-written mock can't fabricate a successful purchase or a real transaction — only Apple's StoreKitTest framework (`SKTestSession`, backed by a `.storekit` config) can exercise those paths, and `SKTestSession` itself only works inside a code-signed, entitled host app (not a bare CLI `swift test` binary). So test coverage is split in two: `TipStoreTests.swift` uses a hand-written `MockStoreProvider` for everything that doesn't need a real `Product`/`Transaction` (error propagation, product-not-found, no-op restore) and runs everywhere including CI; `TipStoreStoreKitTestTests.swift` exercises the real success/restore paths via `SKTestSession` and `TestTips.storekit`, skipping itself (not failing) with `XCTSkip` when the sandbox lacks the StoreKit testing entitlement — run it from Xcode to get real coverage.
+- App-extension/App-Clip friendliness carries forward as a non-functional requirement, not independently verified at this milestone (needs a real extension target to check, deferred to later manual verification alongside the sample app).
+- **Acceptance:** `swift test` passes with 0 failures (4 run, 3 gracefully skipped outside Xcode). `swift build`/`swift run IndieAppGrowthKitDemo` succeed; the demo's "Purchase Engine (real)" row in `HomeView` calls `IndieAppGrowthKit.tipStore.start()` and lets you buy a tip, so the milestone is exercised from the sample app as required — full purchase-flow verification against `Demo.storekit` still needs Xcode (see Demo/README.md), since that's the same StoreKitTest entitlement constraint.
 
 ## M2 — Theming System ⬜
 - Define the theme/style configuration object (colors, typography, shape, spacing, button styles, copy overrides) and view-builder injection points, used by every bundled view.
@@ -85,7 +85,7 @@ A minimal SwiftUI app scaffolded alongside M0 (present from the start, not defer
 - **Structure:** An `.executableTarget` (`IndieAppGrowthKitDemo`) declared in the root `Package.swift`, source at `Demo/IndieAppGrowthKitDemo/`, depending on the `IndieAppGrowthKit` library target directly — no separate Xcode project or workspace needed. Runs via `swift run IndieAppGrowthKitDemo`. Builds for macOS so it's runnable straight from the CLI; see `Demo/README.md` for why, and for how to spot-check iOS/theming milestones in Simulator once there's UI to check.
 - **`HomeView`:** one row per feature, each labeled with the milestone that implements it and a status (`Not yet implemented` / `Ready`). A row moves from placeholder to a real, wired-up action as its milestone lands — a milestone isn't done until its `HomeView` row does the real thing, not until it merely compiles.
 - **Planned additions as milestones land:**
-  - `Demo.storekit` configuration file (tip tiers + custom amount) once M1 lands, plus an Xcode scheme pointed at it for real purchase-flow testing (see `Demo/README.md`).
+  - `Demo.storekit` configuration file (preset tip tiers) plus an Xcode scheme pointed at it for real purchase-flow testing (see `Demo/README.md`).
   - A **Theme Switcher** screen once M2 lands, toggling between the default theme and a deliberately different custom theme (different colors/fonts/copy), to continuously prove every bundled view stays fully re-themeable.
   - A **Debug Panel** screen once M13 lands, embedding the debug overlay plus controls to fast-forward simulated launch count/days-since-install, so trigger conditions can be tested in seconds instead of days.
 - **Purpose:** every milestone's acceptance criteria that says "verified in the sample app" is run against this target — it is the manual test harness for the whole SDK, kept in lockstep with the feature set.

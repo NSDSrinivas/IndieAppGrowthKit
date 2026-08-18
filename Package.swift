@@ -19,7 +19,8 @@ let package = Package(
         ),
         .testTarget(
             name: "IndieAppGrowthKitTests",
-            dependencies: ["IndieAppGrowthKit"]
+            dependencies: ["IndieAppGrowthKit"],
+            resources: [.copy("Resources/TestTips.storekit")]
         ),
         // Runnable sample app (macOS, via `swift run IndieAppGrowthKitDemo`) that
         // integrates every SDK feature end-to-end for manual testing during

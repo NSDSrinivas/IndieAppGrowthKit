@@ -1,4 +1,5 @@
 import SwiftUI
+import Observation
 import IndieAppGrowthKit
 
 /// Entry point exercising every SDK feature, one row per milestone.
@@ -7,11 +8,14 @@ import IndieAppGrowthKit
 /// a real action, since most features haven't landed yet. As each milestone
 /// ships, its row should be wired to the real API instead of the placeholder.
 struct HomeView: View {
+    @State private var purchaseState = PurchaseSectionState()
+
     var body: some View {
         NavigationStack {
             List {
                 Section("Tipping") {
-                    FeatureRow(title: "Show Tip Jar", milestone: "M3", status: .planned)
+                    PurchaseEngineRow(state: purchaseState)
+                    FeatureRow(title: "Bundled Tip Jar UI", milestone: "M3", status: .planned)
                     FeatureRow(title: "Tip History", milestone: "M4", status: .planned)
                     FeatureRow(title: "Automatic Tip Prompt", milestone: "M6", status: .planned)
                 }
@@ -29,6 +33,80 @@ struct HomeView: View {
                 }
             }
             .navigationTitle("IndieAppGrowthKit Demo")
+            .task {
+                await purchaseState.start()
+            }
+        }
+    }
+}
+
+/// M1 (Purchase Engine Core) is real and wired up here — this row loads
+/// products via `IndieAppGrowthKit.tipStore` and lets you buy one, so the
+/// purchase engine can be manually verified against `Demo.storekit` in
+/// Xcode (see Demo/README.md) even though there's no themed Tip Jar UI yet.
+private struct PurchaseEngineRow: View {
+    let state: PurchaseSectionState
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text("Purchase Engine (real)")
+                Spacer()
+                Text("M1 — Ready").font(.caption).foregroundStyle(.secondary)
+            }
+            switch state.status {
+            case .loading:
+                Text("Loading products…").font(.caption).foregroundStyle(.secondary)
+            case .failed(let message):
+                Text("Failed to load products: \(message)").font(.caption).foregroundStyle(.red)
+            case .loaded(let products):
+                if products.isEmpty {
+                    Text("No products loaded. Attach Demo.storekit in the Xcode scheme (see Demo/README.md).")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(products, id: \.self) { identifier in
+                        Button("Tip: \(identifier)") {
+                            Task { await state.purchase(identifier: identifier) }
+                        }
+                    }
+                }
+                if let outcome = state.lastOutcome {
+                    Text("Last outcome: \(outcome)").font(.caption).foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+}
+
+@MainActor
+@Observable
+private final class PurchaseSectionState {
+    enum Status {
+        case loading
+        case loaded([String])
+        case failed(String)
+    }
+
+    var status: Status = .loading
+    var lastOutcome: String?
+
+    func start() async {
+        do {
+            try await IndieAppGrowthKit.tipStore.start()
+            let identifiers = await IndieAppGrowthKit.tipStore.products.map(\.id)
+            status = .loaded(identifiers)
+        } catch {
+            status = .failed(error.localizedDescription)
+        }
+    }
+
+    func purchase(identifier: String) async {
+        do {
+            let outcome = try await IndieAppGrowthKit.tipStore.purchase(identifier: identifier)
+            lastOutcome = String(describing: outcome)
+        } catch {
+            lastOutcome = "error: \(error.localizedDescription)"
         }
     }
 }

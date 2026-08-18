@@ -22,11 +22,11 @@ Indie App Growth Kit (Swift API namespace: `IndieAppGrowthKit`) is a Swift SDK t
 
 ### Payments
 - Use StoreKit 2 (In-App Purchase, consumable products) as the payment backend.
-- Support multiple tip tiers (e.g. small/medium/large/custom amount), configured by the developer via product identifiers set up in App Store Connect.
+- Support multiple tip tiers (e.g. small/medium/large/extra-large), configured by the developer via product identifiers set up in App Store Connect.
 - Handle purchase flow: initiate purchase, listen for transaction updates, verify transaction, finish transaction.
 - Gracefully handle failure states: user cancellation, payment declined, network error, pending/deferred purchase (e.g. Ask to Buy).
 - Prevent duplicate/unfinished transactions from being lost (restore unfinished transactions on launch).
-- Support a "custom amount" tip tier (Apple's custom-amount In-App Purchase, available iOS 16.4+) in addition to preset tiers, letting the user enter their own tip amount.
+- ~~Support a "custom amount" tip tier letting the user enter their own tip amount.~~ **Descoped for v1** (discovered during M1 implementation): true custom-amount consumable purchases go through Apple's Advanced Commerce API, which requires the app's backend to produce a signed JWS for each purchase — that needs a server, directly conflicting with this SDK's no-backend/no-network-calls-of-its-own requirement. v1 instead supports as many discrete preset tiers as the developer wants to configure (e.g. $1/$3/$5/$10/$25), which covers the same goal (letting the user pick their own amount) without a server. True arbitrary-amount entry is a candidate for a later version if/when server-side signing is added.
 - Support testing tip flows locally against Xcode's `.storekit` configuration file, so devs can preview and test purchases without hitting the real App Store sandbox.
 
 ### UI
@@ -40,7 +40,7 @@ Indie App Growth Kit (Swift API namespace: `IndieAppGrowthKit`) is a Swift SDK t
 - Built-in success feedback on a completed tip (e.g. haptic feedback on iOS, a confetti/celebratory animation), enabled by default and customizable/overridable by the host app.
 - Emit a completion callback/closure or async result indicating success, cancellation, or failure, so the host app can show its own confirmation UI if desired.
 - Allow developers to use just the underlying purchase API without the bundled UI.
-- Accessibility: all interactive elements (tier cards, buttons, custom-amount field) expose VoiceOver labels, values, and hints; success/error states are announced via accessibility notifications.
+- Accessibility: all interactive elements (tier cards, buttons) expose VoiceOver labels, values, and hints; success/error states are announced via accessibility notifications.
 
 ### Configuration
 - Developer configures the SDK once at app launch with their set of product identifiers.
