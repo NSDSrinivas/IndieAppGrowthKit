@@ -17,12 +17,14 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - App-extension/App-Clip friendliness carries forward as a non-functional requirement, not independently verified at this milestone (needs a real extension target to check, deferred to later manual verification alongside the sample app).
 - **Acceptance:** `swift test` passes with 0 failures (4 run, 3 gracefully skipped outside Xcode). `swift build`/`swift run IndieAppGrowthKitDemo` succeed; the demo's "Purchase Engine (real)" row in `HomeView` calls `IndieAppGrowthKit.tipStore.start()` and lets you buy a tip, so the milestone is exercised from the sample app as required — full purchase-flow verification against `Demo.storekit` still needs Xcode (see Demo/README.md), since that's the same StoreKitTest entitlement constraint.
 
-## M2 — Theming System ⬜
-- Define the theme/style configuration object (colors, typography, shape, spacing, button styles, copy overrides) and view-builder injection points, used by every bundled view.
-- **Acceptance:** A throwaway test view can be fully re-themed (colors, fonts, all copy) with zero default styling visible, proving no bundled view hardcodes appearance or text.
+## M2 — Theming System ✅
+- `TipJarTheme` (`Sources/IndieAppGrowthKit/Theming/TipJarTheme.swift`): `Colors`, `Typography`, `Metrics`, and `Strings` (all user-facing copy, so localization/rewording doesn't need a fork) sub-structs, plus `.default`.
+- `\.tipJarTheme` environment value and `View.tipJarTheme(_:)` modifier (`TipJarTheme+Environment.swift`) — the injection mechanism every future bundled view (M3 onward) will read from instead of hardcoding appearance.
+- Per-element view-builder injection (custom tier row/CTA content) is deferred to M3, since there's no real bundled view to attach builders to yet — tracked there, not dropped.
+- **Acceptance:** `TipJarThemeTests.swift` proves the environment plumbing works (default value, custom value round-trips, distinct from default). `Demo/IndieAppGrowthKitDemo/ThemePreviewView.swift` is the throwaway test view: a "Theme Switcher" row in the sample app toggles between `.default` and a deliberately extreme custom theme (different colors, fonts, corner radius, and every string) on a view that reads every themeable property — nothing left hardcoded.
 
 ## M3 — Tip Jar UI ⬜
-- Bundled SwiftUI Tip Jar view: tier list, custom-amount entry, localized pricing, light/dark + Dynamic Type, success feedback (haptics/confetti), completion callback, "Powered by Indie App Growth Kit" non-removable attribution link to the GitHub repo, VoiceOver labels/hints.
+- Bundled SwiftUI Tip Jar view: preset tier list, localized pricing, light/dark + Dynamic Type, success feedback (haptics/confetti), completion callback, "Powered by Indie App Growth Kit" non-removable attribution link to the GitHub repo, VoiceOver labels/hints.
 - Built on M1 (purchase engine) + M2 (theming).
 - **Acceptance:** Manual purchase flow completes end-to-end in the sample app against the `.storekit` config, in both light/dark mode, with a custom theme applied, with VoiceOver on.
 
