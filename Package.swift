@@ -21,5 +21,13 @@ let package = Package(
             name: "IndieAppGrowthKitTests",
             dependencies: ["IndieAppGrowthKit"]
         ),
+        // Runnable sample app (macOS, via `swift run IndieAppGrowthKitDemo`) that
+        // integrates every SDK feature end-to-end for manual testing during
+        // development. See Demo/README.md. Not part of the distributed library.
+        .executableTarget(
+            name: "IndieAppGrowthKitDemo",
+            dependencies: ["IndieAppGrowthKit"],
+            path: "Demo/IndieAppGrowthKitDemo"
+        ),
     ]
 )
