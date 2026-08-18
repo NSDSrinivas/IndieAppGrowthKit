@@ -54,10 +54,10 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - **Scope change found during implementation:** `ShareLink` has no public completion callback for the share sheet's outcome on either platform today. REQUIREMENTS.md updated to descope the outcome callback rather than fake it with a private-API workaround; the corresponding analytics event was removed from the Analytics/Callbacks list.
 - **Acceptance:** `ShareAppButtonTests.swift` covers URL construction. The demo's Growth section has a real `ShareAppButton`; `swift build`/`swift run` succeed. Full iPad popover-anchoring verification needs a real iPad/Simulator run, tracked as a manual QA step (same category as the M3 purchase-flow QA step) rather than something `swift test` can verify.
 
-## M8 — App Store Review Prompt ⬜
-- `requestReview()` standalone API + automatic trigger via M5 with independent state/conditions.
-- Optional review → feedback pre-prompt fallback (routes negative responses to M9 instead of `SKStoreReviewController`).
-- **Acceptance:** Manual verification that `requestReview()` invokes the system prompt; automatic trigger fires per configured conditions; fallback correctly redirects to the feedback hook when declined.
+## M8 — App Store Review Prompt ✅
+- `ReviewPrompt.request()` (`Sources/IndieAppGrowthKit/Review/ReviewPrompt.swift`): standalone, callable anytime, using the real `AppStore.requestReview(in:)` API — finds the active `UIWindowScene` (iOS) or key window's `NSViewController` (macOS) automatically so the host app doesn't have to plumb one through.
+- `AutomaticReviewPromptController` (mirrors `AutomaticTipPromptController`, `"review"` namespace, independently configured conditions/state) + `View.automaticReviewPrompt(controller:prePromptTitle:prePromptMessage:onNegativeResponse:)` (`UI/AutomaticReviewPromptModifier.swift`): when `prePromptTitle` is supplied, shows an "Enjoying the app?" alert first — "Yes" calls `ReviewPrompt.request()`, "Not really" records a dismiss and calls `onNegativeResponse` (wired to the Feedback hook once M9 lands) instead of the system prompt.
+- **Acceptance:** `AutomaticReviewPromptControllerTests.swift` covers namespace independence from the tip controller, a custom-signal condition (e.g. gating review prompts on `.customSignal("successfulTip")`), and dismiss tracking. The demo's Growth section has a real "Request Review (manual, real)" button and an "Automatic Review Prompt" screen exercising the pre-prompt fallback. `swift build`/`swift run`/`swift test` all pass (33 tests, 3 gracefully skipped per the standing StoreKitTest constraint).
 
 ## M9 — Feedback / Bug Report Hook ⬜
 - `requestFeedback()` via mail composer or bundled themed form; used standalone and as the M8 fallback destination.
