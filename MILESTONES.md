@@ -36,10 +36,12 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - `TipStore.tipHistory()` computes it by walking `StoreProviding.allTransactions()` (new protocol method; `StoreKitProvider` backs it with `Transaction.all`), filtering to this store's product identifiers, and summing `transaction.price`/`transaction.currency` per verified transaction — purely local, no server round-trip, consistent with the SDK's no-backend design.
 - **Acceptance:** `TipHistoryTests.swift` (mock-based, runs everywhere) covers the empty-history case. The demo's "Tip History (real)" row calls `IndieAppGrowthKit.tipStore.tipHistory()` and displays the result; full verification of a non-empty history needs a real purchase first (same Xcode + `Demo.storekit` path as M1/M3).
 
-## M5 — Automatic Trigger Engine (shared infra) ⬜
-- Generic, reusable engine: launch count, days-since-install, days-since-last-prompt cooldown, session count, custom developer signal — AND-combined, on-device persisted state (`UserDefaults`), dismiss-count cap.
-- Built standalone first since the tip prompt, review prompt, and What's New prompt all reuse it with independent state namespaces.
-- **Acceptance:** Unit tests simulate launch sequences and assert the engine fires/doesn't fire per each condition type and combination, including cooldown and dismiss-cap suppression.
+## M5 — Automatic Trigger Engine (shared infra) ✅
+- `AutomaticTriggerEngine` (actor, `Sources/IndieAppGrowthKit/Triggers/AutomaticTriggerEngine.swift`): per-namespace, `UserDefaults`-persisted state (`TriggerState`: launch count, session count, install date, last-prompt date, dismiss count, custom signals). `recordLaunch()`/`recordSession()`/`recordCustomSignal(_:)`/`recordPromptShown()`/`recordDismiss()`/`reset()` mutate it; `evaluate(_:)` AND-combines a `[TriggerCondition]`.
+- `TriggerCondition` (`Triggers/TriggerCondition.swift`): `.launchCount`, `.daysSinceInstall`, `.daysSinceLastPrompt` (cooldown), `.sessionCount`, `.customSignal`, `.dismissCountBelow` (the dismiss cap, expressed as a condition rather than a separate mechanism, so callers compose it into the same AND-combined list instead of two different suppression systems).
+- The clock is injectable (`now: @Sendable () -> Date`) specifically so tests can advance time without waiting real days; each namespace is fully independent (own `UserDefaults` key), verified directly.
+- Feature-specific suppression (e.g. "never prompt if the user already tipped") is intentionally left to callers (M6/M8/M12), since this generic engine has no way to know that.
+- **Acceptance:** `AutomaticTriggerEngineTests.swift` (11 tests, all mock/fake-clock-based, no StoreKit involved so they run everywhere) cover every condition type individually, AND-combination, cross-instance state persistence, reset, and namespace independence.
 
 ## M6 — Automatic Tip Prompt ⬜
 - Wire the Tip Jar (M3) to the trigger engine (M5) with its own condition set and state namespace; never fires if the user already tipped.
