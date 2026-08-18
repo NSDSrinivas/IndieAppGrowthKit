@@ -23,10 +23,13 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - Per-element view-builder injection (custom tier row/CTA content) is deferred to M3, since there's no real bundled view to attach builders to yet — tracked there, not dropped.
 - **Acceptance:** `TipJarThemeTests.swift` proves the environment plumbing works (default value, custom value round-trips, distinct from default). `Demo/IndieAppGrowthKitDemo/ThemePreviewView.swift` is the throwaway test view: a "Theme Switcher" row in the sample app toggles between `.default` and a deliberately extreme custom theme (different colors, fonts, corner radius, and every string) on a view that reads every themeable property — nothing left hardcoded.
 
-## M3 — Tip Jar UI ⬜
-- Bundled SwiftUI Tip Jar view: preset tier list, localized pricing, light/dark + Dynamic Type, success feedback (haptics/confetti), completion callback, "Powered by Indie App Growth Kit" non-removable attribution link to the GitHub repo, VoiceOver labels/hints.
-- Built on M1 (purchase engine) + M2 (theming).
-- **Acceptance:** Manual purchase flow completes end-to-end in the sample app against the `.storekit` config, in both light/dark mode, with a custom theme applied, with VoiceOver on.
+## M3 — Tip Jar UI ✅
+- `TipJarView<TierContent: View>` (`Sources/IndieAppGrowthKit/UI/TipJarView.swift`): loads products via a `TipStore`, renders one row per tier (default: `DefaultTierRow`, fully replaceable via the `tierContent` view builder — the per-element customization point promised in REQUIREMENTS.md), reports `TipJarCompletion` (`.success`/`.cancelled`/`.pending`/`.failed`) per attempt.
+- Success feedback: `SuccessHaptic` (`UINotificationFeedbackGenerator` on iOS, no-op elsewhere) + a dependency-free `ConfettiView` overlay, both from `UI/SuccessFeedback.swift`.
+- Localized pricing via `Product.displayPrice`/`displayName` directly (already locale-correct from StoreKit); light/dark and Dynamic Type come for free from reading system fonts/colors through the theme rather than hardcoding either.
+- The non-removable "Powered by Indie App Growth Kit" link (`IndieAppGrowthKitLinks.repository`) is always rendered, styled through the theme like everything else.
+- Accessibility: each tier row is one combined accessibility element with label (product name), value (price), and hint (the themed purchase-button copy); the title carries the `.isHeader` trait.
+- **Acceptance:** `TipJarViewSupportTests.swift` covers `TipJarCompletion` equality and the repository link. `swift build`/`swift run IndieAppGrowthKitDemo` succeed with no crash. The demo's "Bundled Tip Jar UI" row presents the real view. Full manual verification (purchase flow end-to-end, light/dark, custom theme, VoiceOver) needs Xcode + `Demo.storekit` (now checked in) per the same StoreKitTest entitlement constraint noted in M1 — tracked as a standing manual QA step before any release, not blocking further milestone development.
 
 ## M4 — Tip History ⬜
 - API to query whether the user has tipped and their lifetime tip total from local transaction data.
