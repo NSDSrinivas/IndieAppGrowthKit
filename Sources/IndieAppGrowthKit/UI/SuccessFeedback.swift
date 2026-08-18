@@ -49,6 +49,7 @@ struct ConfettiView: View {
             }
         }
         .allowsHitTesting(false)
+        .accessibilityHidden(true)
         .onAppear { animate = true }
     }
 }
