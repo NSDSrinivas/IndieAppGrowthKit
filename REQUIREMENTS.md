@@ -1,8 +1,8 @@
-# IndieTipsSDK — Requirements
+# Indie App Growth Kit — Requirements
 
 ## Overview
 
-IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS apps to let end users send voluntary tips (donations) to support the app or its developer. It targets Apple platforms and is distributed via Swift Package Manager.
+Indie App Growth Kit (Swift API namespace: `IndieAppGrowthKit`) is a Swift SDK that indie developers integrate into their iOS/macOS apps to help them grow and sustain their app: accepting voluntary tips/donations, prompting for App Store reviews, sharing the app, collecting feedback, cross-promoting other apps, and celebrating user milestones. It targets Apple platforms and is distributed via Swift Package Manager.
 
 ## Goals
 
@@ -35,7 +35,7 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - Customization is expressed via a theme/style configuration object (or SwiftUI `ViewModifier`/environment-based styling) passed into each bundled view, with sensible defaults so theming is opt-in.
 - Support fully custom per-element rendering via SwiftUI view builders (e.g. custom tier row content, custom call-to-action button), not just color/font tokens, so a host app can restyle any bundled view to match its own design system.
 - Support light/dark mode and Dynamic Type, including when custom theming is applied.
-- The Tip Jar view displays a "Powered by IndieTipsSDK" attribution link that opens the SDK's GitHub repository in the system browser. Its position and text styling follow the same theming system as the rest of the view.
+- The Tip Jar view displays a "Powered by Indie App Growth Kit" attribution link that opens the SDK's GitHub repository in the system browser. Its position and text styling follow the same theming system as the rest of the view, but the link itself is non-removable — the host app cannot hide or disable it.
 - Localized pricing display: tip tier prices are shown using StoreKit's localized price strings, correctly formatted for the user's currency/region.
 - Built-in success feedback on a completed tip (e.g. haptic feedback on iOS, a confetti/celebratory animation), enabled by default and customizable/overridable by the host app.
 - Emit a completion callback/closure or async result indicating success, cancellation, or failure, so the host app can show its own confirmation UI if desired.
@@ -50,7 +50,7 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - Expose an API to query the current user's tipping history from local StoreKit transaction data, e.g. whether they have tipped before and their total lifetime tip amount, so host apps can show a thank-you badge or small perk without needing a server.
 
 ### Share App Hook
-- Provide a standalone public API (e.g. `IndieTipsSDK.shareApp()`) that presents the native system share sheet (`UIActivityViewController` on iOS, `NSSharingServicePicker` on macOS) pre-populated with the app's App Store link, so the user can share it via Messages, email, social media, AirDrop, or any other share-sheet destination they have installed.
+- Provide a standalone public API (e.g. `IndieAppGrowthKit.shareApp()`) that presents the native system share sheet (`UIActivityViewController` on iOS, `NSSharingServicePicker` on macOS) pre-populated with the app's App Store link, so the user can share it via Messages, email, social media, AirDrop, or any other share-sheet destination they have installed.
 - The host app calls this hook explicitly from its own UI (e.g. a "Tell a friend" / "Share this app" row in a Settings screen) — this hook has no automatic-trigger engine of its own, unlike the tip and review prompts.
 - The App Store link/ID is provided by the host app as part of SDK configuration; the SDK constructs the shareable App Store URL from it.
 - Support an optional developer-supplied share message/text and, on iOS/iPadOS, accept the presenting view/anchor needed for popover presentation on iPad.
@@ -58,14 +58,14 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 
 ### App Store Review Prompt
 - Provide an optional hook to trigger Apple's `SKStoreReviewController` review prompt after a successful tip, since a completed tip is a natural moment of goodwill to ask for a review. Off by default; host app opts in.
-- Expose that hook as a standalone public API (e.g. `IndieTipsSDK.requestReview()`) that the host app can call directly at any time, not only via the automatic post-tip trigger — so devs can invoke the review prompt from their own logic/timing if they don't want the automatic behavior.
+- Expose that hook as a standalone public API (e.g. `IndieAppGrowthKit.requestReview()`) that the host app can call directly at any time, not only via the automatic post-tip trigger — so devs can invoke the review prompt from their own logic/timing if they don't want the automatic behavior.
 - Provide the same opt-in automatic-trigger engine used for tip prompts (see Automatic Tip Prompt Triggers below) for the review prompt, using an independently configured set of conditions — launch count, days since install, days since last review prompt, session count, and custom developer signals (e.g. "after successful tip", "after N successful tips") — so devs can drive review requests off different thresholds than tip prompts.
 - Track the review prompt's own state (launch count, install date, last-prompted date) separately from the tip prompt engine's state, since the two are configured and triggered independently.
 - Respect Apple's system-level rate limit on `SKStoreReviewController` (a maximum of a few prompts per 365-day rolling window, enforced by iOS itself, outside the SDK's control) — the SDK's own cooldown is an additional, developer-configurable throttle on top of that, not a replacement for it.
 - Support an optional "review → feedback" fallback flow: present a lightweight pre-prompt ("Enjoying the app?") before the system review prompt; on a negative response, route the user to the Feedback/Bug Report hook (see below) instead of the App Store review prompt, so unhappy users are funneled to private feedback rather than a public bad review. Off by default; host app opts in and supplies the pre-prompt copy or a custom view.
 
 ### Feedback / Bug Report Hook
-- Provide a standalone public API (e.g. `IndieTipsSDK.requestFeedback()`) that lets the user send feedback directly to the developer, via a mail composer (`MFMailComposeViewController`/`NSSharingService` mail, pre-addressed to a developer-configured support email with device/app version info pre-filled) or a minimal bundled in-SDK feedback form as a lighter-weight alternative.
+- Provide a standalone public API (e.g. `IndieAppGrowthKit.requestFeedback()`) that lets the user send feedback directly to the developer, via a mail composer (`MFMailComposeViewController`/`NSSharingService` mail, pre-addressed to a developer-configured support email with device/app version info pre-filled) or a minimal bundled in-SDK feedback form as a lighter-weight alternative.
 - Callable directly by the host app at any time, and usable as the negative-response destination for the review prompt's "review → feedback" fallback flow described above.
 - Bundled feedback form (if used instead of mail) follows the same full theming requirements as the rest of the bundled UI, and its submission is handled entirely by the host app (e.g. via a completion callback with the entered text) — the SDK does not transmit feedback anywhere itself, consistent with making no network calls of its own.
 
@@ -75,7 +75,7 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - Fully themeable consistent with the rest of the bundled UI; usable standalone (e.g. in a Settings screen) or as one more automatic-trigger-engine-eligible surface.
 
 ### Milestone Celebration Hook
-- Generalize the Automatic Tip Prompt Triggers' "custom developer signal" into a small standalone, reusable celebration API (e.g. `IndieTipsSDK.celebrate(milestone:)`) that a host app can call for any in-app milestone or streak, not only tipping-related ones.
+- Generalize the Automatic Tip Prompt Triggers' "custom developer signal" into a small standalone, reusable celebration API (e.g. `IndieAppGrowthKit.celebrate(milestone:)`) that a host app can call for any in-app milestone or streak, not only tipping-related ones.
 - Reuses the same built-in success feedback (haptics/confetti) as a successful tip, and can optionally bundle a tip and/or review nudge alongside the celebration if the host app opts in, so a single milestone moment can prompt multiple engagement actions at once.
 
 ### Automatic Tip Prompt Triggers
@@ -119,4 +119,3 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 ## Open Questions
 
 - Exact shape of the theming API (struct-based style tokens vs. SwiftUI environment values vs. view-builder injection, or a combination).
-- Whether the "Powered by IndieTipsSDK" attribution link can be hidden/removed by the host app, or is always shown as a fixed requirement of using the bundled UI.
