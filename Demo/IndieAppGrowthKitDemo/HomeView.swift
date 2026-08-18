@@ -21,7 +21,7 @@ struct HomeView: View {
                         }
                         .navigationTitle("Tip Jar")
                     }
-                    FeatureRow(title: "Tip History", milestone: "M4", status: .planned)
+                    TipHistoryRow()
                     FeatureRow(title: "Automatic Tip Prompt", milestone: "M6", status: .planned)
                 }
                 Section("Growth") {
@@ -83,6 +83,33 @@ private struct PurchaseEngineRow: View {
                 }
             }
         }
+    }
+}
+
+/// M4 (Tip History) is real and wired up here.
+private struct TipHistoryRow: View {
+    @State private var history: TipHistory?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text("Tip History (real)")
+                Spacer()
+                Text("M4 — Ready").font(.caption).foregroundStyle(.secondary)
+            }
+            if let history {
+                let totalsText = history.totalsByCurrency
+                    .map { "\($1) \($0)" }
+                    .joined(separator: ", ")
+                Text(history.hasTipped ? "You've tipped \(history.tipCount) time(s). Totals: \(totalsText)" : "No tips yet.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Button("Refresh") {
+                Task { history = await IndieAppGrowthKit.tipStore.tipHistory() }
+            }
+        }
+        .task { history = await IndieAppGrowthKit.tipStore.tipHistory() }
     }
 }
 

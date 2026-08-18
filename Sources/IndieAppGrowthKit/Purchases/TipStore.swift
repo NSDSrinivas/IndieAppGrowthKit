@@ -73,6 +73,27 @@ public actor TipStore {
         return try await purchase(product)
     }
 
+    /// The user's local tipping history — whether they've tipped and their
+    /// lifetime total(s) — computed from finished/verified transactions for
+    /// this store's product identifiers. No server round-trip; purely local.
+    public func tipHistory() async -> TipHistory {
+        let identifierSet = Set(productIdentifiers)
+        var tipCount = 0
+        var totals: [String: Decimal] = [:]
+
+        for result in await storeProvider.allTransactions() {
+            guard let transaction = try? Self.checkVerified(result),
+                  identifierSet.contains(transaction.productID) else { continue }
+            tipCount += 1
+            if let price = transaction.price {
+                let currencyCode = transaction.currency?.identifier ?? "UNKNOWN"
+                totals[currencyCode, default: 0] += price
+            }
+        }
+
+        return TipHistory(hasTipped: tipCount > 0, tipCount: tipCount, totalsByCurrency: totals)
+    }
+
     private func restoreUnfinishedTransactions() async {
         for result in await storeProvider.unfinishedTransactions() {
             if let transaction = try? Self.checkVerified(result) {
