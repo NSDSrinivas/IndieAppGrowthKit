@@ -28,7 +28,9 @@ struct HomeView: View {
                     FeatureRow(title: "What's New", milestone: "M12", status: .planned)
                 }
                 Section("Dev Tools") {
-                    FeatureRow(title: "Theme Switcher", milestone: "M2", status: .planned)
+                    NavigationLink("Theme Switcher") {
+                        ThemePreviewView()
+                    }
                     FeatureRow(title: "Debug Overlay", milestone: "M13", status: .planned)
                 }
             }
