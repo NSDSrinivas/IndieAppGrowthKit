@@ -21,6 +21,14 @@ public enum IndieAppGrowthKit {
         return tipStore
     }
 
+    /// The configuration passed to ``configure(_:)``.
+    public static var configuration: Configuration {
+        guard let configuration = state.configuration else {
+            fatalError("IndieAppGrowthKit.configure(_:) must be called before accessing configuration.")
+        }
+        return configuration
+    }
+
     private final class State: @unchecked Sendable {
         var configuration: Configuration?
         var tipStore: TipStore?

@@ -42,6 +42,12 @@ extension ShareAppButton where Label == SwiftUI.Label<Text, Image> {
             SwiftUI.Label("Share App", systemImage: "square.and.arrow.up")
         }
     }
+
+    /// Convenience using the App Store ID from ``IndieAppGrowthKit/configure(_:)``,
+    /// so the host app doesn't have to repeat it at every call site.
+    public init(message: String? = nil) {
+        self.init(appStoreID: IndieAppGrowthKit.configuration.appStoreID, message: message)
+    }
 }
 
 enum AppStoreLink {

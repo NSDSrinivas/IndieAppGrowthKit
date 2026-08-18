@@ -27,7 +27,7 @@ struct HomeView: View {
                     }
                 }
                 Section("Growth") {
-                    ShareAppButton(appStoreID: "0000000000", message: "Check out this app!")
+                    ShareAppButton(message: "Check out this app!")
                     Button("Request Review (manual, real)") {
                         ReviewPrompt.request()
                     }
