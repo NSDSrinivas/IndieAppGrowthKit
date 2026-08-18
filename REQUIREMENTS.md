@@ -55,11 +55,9 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 
 - Subscription-based tipping / recurring tips.
 - Non-Apple platforms (Android, web).
-- Server-side receipt validation or a backend dashboard.
+- Server-side receipt validation or a backend dashboard. All receipt/transaction verification is done on-device via StoreKit 2's built-in `VerificationResult`.
 - Custom/arbitrary tip amounts (only preset tiers) — may be considered for a later version.
 
 ## Open Questions
 
-- Minimum supported OS version — confirm iOS 15 / macOS 12 is acceptable, or whether older versions (needing StoreKit 1 fallback) must be supported.
-- Whether a later version should add server-side receipt verification for fraud protection.
 - Exact shape of the theming API (struct-based style tokens vs. SwiftUI environment values vs. view-builder injection, or a combination).
