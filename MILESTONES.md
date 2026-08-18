@@ -43,9 +43,11 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - Feature-specific suppression (e.g. "never prompt if the user already tipped") is intentionally left to callers (M6/M8/M12), since this generic engine has no way to know that.
 - **Acceptance:** `AutomaticTriggerEngineTests.swift` (11 tests, all mock/fake-clock-based, no StoreKit involved so they run everywhere) cover every condition type individually, AND-combination, cross-instance state persistence, reset, and namespace independence.
 
-## M6 — Automatic Tip Prompt ⬜
-- Wire the Tip Jar (M3) to the trigger engine (M5) with its own condition set and state namespace; never fires if the user already tipped.
-- **Acceptance:** Sample app demonstrates the auto-prompt firing after configured conditions (verified via the debug overlay, M11, or accelerated test config).
+## M6 — Automatic Tip Prompt ✅
+- `AutomaticTipPromptController` (actor, `Triggers/AutomaticTipPromptController.swift`) wraps an `AutomaticTriggerEngine` under the `"tip"` namespace plus a `TipStore`: `shouldShowPrompt()` checks `tipStore.tipHistory().hasTipped` first (feature-specific suppression the generic engine can't know) and only then evaluates the developer's conditions.
+- `View.automaticTipPrompt(controller:tipStore:onCompletion:)` (`UI/AutomaticTipPromptModifier.swift`) checks `shouldShowPrompt()` once on `.task`, records the prompt shown, and presents `TipJarView` as a sheet; dismissing without a successful tip records a dismiss (feeding back into `.dismissCountBelow`).
+- The engine is injectable (constructor takes an `AutomaticTriggerEngine`, not raw `UserDefaults`) — this also sidesteps a Swift 6 strict-concurrency false positive (`sending risks causing data races`) that showed up when passing `UserDefaults` directly across an actor-init boundary, and gives tests a clean way to inject a fake-clock engine.
+- **Acceptance:** `AutomaticTipPromptControllerTests.swift` covers condition-not-met, condition-met, and prompt-shown/dismiss state updates. The demo's "Automatic Tip Prompt" row uses a trivially-true condition (`launchCount(atLeast: 1)`) so the prompt fires immediately on appear, without needing to wait out real launch counts — full debug-overlay-based verification of realistic thresholds is tracked at M13.
 
 ## M7 — Share App Hook ⬜
 - `shareApp()` presenting the native share sheet with the App Store link, optional custom message, iPad popover anchor, outcome callback.
