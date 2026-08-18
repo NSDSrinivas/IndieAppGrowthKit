@@ -50,6 +50,7 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 
 ### App Store Review Prompt
 - Provide an optional hook to trigger Apple's `SKStoreReviewController` review prompt after a successful tip, since a completed tip is a natural moment of goodwill to ask for a review. Off by default; host app opts in.
+- Expose that hook as a standalone public API (e.g. `IndieTipsSDK.requestReview()`) that the host app can call directly at any time, not only via the automatic post-tip trigger — so devs can invoke the review prompt from their own logic/timing if they don't want the automatic behavior.
 
 ### Analytics / Callbacks
 - Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled — so host apps can log analytics or show thank-you messaging.
