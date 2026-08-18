@@ -28,7 +28,12 @@ struct HomeView: View {
                 }
                 Section("Growth") {
                     ShareAppButton(appStoreID: "0000000000", message: "Check out this app!")
-                    FeatureRow(title: "Request Review", milestone: "M8", status: .planned)
+                    Button("Request Review (manual, real)") {
+                        ReviewPrompt.request()
+                    }
+                    NavigationLink("Automatic Review Prompt") {
+                        AutomaticReviewPromptDemoView()
+                    }
                     FeatureRow(title: "Send Feedback", milestone: "M9", status: .planned)
                     FeatureRow(title: "Cross-Promotion", milestone: "M10", status: .planned)
                     FeatureRow(title: "Simulate Milestone", milestone: "M11", status: .planned)
