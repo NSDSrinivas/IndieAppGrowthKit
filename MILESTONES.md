@@ -66,9 +66,10 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - **Theme note:** extended `TipJarTheme.Strings` with `feedbackFormTitle`/`feedbackFormPlaceholder`/`feedbackFormSubmitButtonTitle` rather than introducing a second theme type — `TipJarTheme` has effectively become the SDK-wide theme (name kept for API stability).
 - **Acceptance:** `FeedbackMailTests.swift` covers URL construction (percent-encoding) and diagnostics body content. Demo has real "Send Feedback (mail composer, real)" and "Send Feedback (bundled form)" rows, plus the wired review→feedback fallback. `swift build`/`swift test` (35 tests, 3 skipped) pass.
 
-## M10 — Cross-Promotion Hook ⬜
-- API + themed bundled UI listing developer-configured other apps; taps open their App Store listings.
-- **Acceptance:** Sample app configured with two dummy App Store IDs; tapping each opens the correct listing.
+## M10 — Cross-Promotion Hook ✅
+- `PromotedApp` (`Sources/IndieAppGrowthKit/CrossPromotion/PromotedApp.swift`): App Store ID, name, tagline, SF Symbol stand-in icon (a real bundled icon image is a display-layer concern for the host app, not this model).
+- `CrossPromotionView` (`UI/CrossPromotionView.swift`): themed list, tapping an entry opens its App Store listing via `openURL` (reuses `AppStoreLink` from M7) and calls an optional `onTap` for analytics.
+- **Acceptance:** `PromotedAppTests.swift` covers `id` and URL construction. Demo's "Cross-Promotion" screen lists two dummy apps and opens their (placeholder) App Store listings on tap. `swift build`/`swift test` (37 tests, 3 skipped) pass.
 
 ## M11 — Milestone Celebration Hook ⬜
 - `celebrate(milestone:)` generalizing M3's success feedback for arbitrary developer-reported milestones; optional bundled tip/review nudge.

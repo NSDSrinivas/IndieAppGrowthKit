@@ -46,7 +46,13 @@ struct HomeView: View {
                             print("Feedback submitted: \(text)")
                         }
                     }
-                    FeatureRow(title: "Cross-Promotion", milestone: "M10", status: .planned)
+                    NavigationLink("Cross-Promotion") {
+                        CrossPromotionView(apps: [
+                            PromotedApp(appStoreID: "1111111111", name: "Weight Tracker", tagline: "Simple daily weight logging", systemImage: "scalemass"),
+                            PromotedApp(appStoreID: "2222222222", name: "Number Cruncher", tagline: "A handy calculator", systemImage: "function"),
+                        ])
+                        .navigationTitle("More Apps")
+                    }
                     FeatureRow(title: "Simulate Milestone", milestone: "M11", status: .planned)
                     FeatureRow(title: "What's New", milestone: "M12", status: .planned)
                 }
