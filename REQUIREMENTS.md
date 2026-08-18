@@ -31,10 +31,11 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 
 ### UI
 - Provide a pre-built SwiftUI "Tip Jar" view that lists available tip tiers and lets the user pick and confirm one.
-- The bundled UI's look and feel must be fully customizable by the host app, including at minimum: colors (background, accent, text), typography/fonts, corner radius/shape, spacing/layout, button styles, and tier card content (title, subtitle, icon/emoji per tier).
-- Customization is expressed via a theme/style configuration object (or SwiftUI `ViewModifier`/environment-based styling) passed into the bundled view, with sensible defaults so theming is opt-in.
-- Support fully custom per-element rendering via SwiftUI view builders (e.g. custom tier row content, custom call-to-action button), not just color/font tokens, so a host app can restyle the UI to match its own design system.
+- **Every bundled view in the SDK** — Tip Jar, What's New card, Cross-Promotion list, bundled Feedback form, and any other shipped UI — must be fully customizable by the host app, including at minimum: colors (background, accent, text), typography/fonts, all user-facing text/copy (labels, titles, button text, messages), corner radius/shape, spacing/layout, button styles, icons/imagery, and general branding (e.g. a host app logo/header). This is a blanket requirement, not specific to the Tip Jar view alone.
+- Customization is expressed via a theme/style configuration object (or SwiftUI `ViewModifier`/environment-based styling) passed into each bundled view, with sensible defaults so theming is opt-in.
+- Support fully custom per-element rendering via SwiftUI view builders (e.g. custom tier row content, custom call-to-action button), not just color/font tokens, so a host app can restyle any bundled view to match its own design system.
 - Support light/dark mode and Dynamic Type, including when custom theming is applied.
+- The Tip Jar view displays a "Powered by IndieTipsSDK" attribution link that opens the SDK's GitHub repository in the system browser. Its position and text styling follow the same theming system as the rest of the view.
 - Localized pricing display: tip tier prices are shown using StoreKit's localized price strings, correctly formatted for the user's currency/region.
 - Built-in success feedback on a completed tip (e.g. haptic feedback on iOS, a confetti/celebratory animation), enabled by default and customizable/overridable by the host app.
 - Emit a completion callback/closure or async result indicating success, cancellation, or failure, so the host app can show its own confirmation UI if desired.
@@ -118,3 +119,4 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 ## Open Questions
 
 - Exact shape of the theming API (struct-based style tokens vs. SwiftUI environment values vs. view-builder injection, or a combination).
+- Whether the "Powered by IndieTipsSDK" attribution link can be hidden/removed by the host app, or is always shown as a fixed requirement of using the bundled UI.
