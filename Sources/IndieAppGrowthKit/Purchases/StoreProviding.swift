@@ -8,6 +8,8 @@ public protocol StoreProviding: Sendable {
     func unfinishedTransactions() async -> [VerificationResult<Transaction>]
     func finish(_ transaction: Transaction) async
     var transactionUpdates: AsyncStream<VerificationResult<Transaction>> { get }
+    /// All of the user's transactions recorded on this device, finished or not.
+    func allTransactions() async -> [VerificationResult<Transaction>]
 }
 
 /// Real ``StoreProviding`` implementation backed by StoreKit 2.
@@ -32,6 +34,14 @@ public struct StoreKitProvider: StoreProviding {
 
     public func finish(_ transaction: Transaction) async {
         await transaction.finish()
+    }
+
+    public func allTransactions() async -> [VerificationResult<Transaction>] {
+        var results: [VerificationResult<Transaction>] = []
+        for await result in Transaction.all {
+            results.append(result)
+        }
+        return results
     }
 
     public var transactionUpdates: AsyncStream<VerificationResult<Transaction>> {

@@ -28,6 +28,10 @@ final class MockStoreProvider: StoreProviding, @unchecked Sendable {
         finishCallCount += 1
     }
 
+    func allTransactions() async -> [VerificationResult<Transaction>] {
+        []
+    }
+
     var transactionUpdates: AsyncStream<VerificationResult<Transaction>> {
         AsyncStream { $0.finish() }
     }
