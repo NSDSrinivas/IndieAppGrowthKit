@@ -53,7 +53,7 @@ struct HomeView: View {
                         ])
                         .navigationTitle("More Apps")
                     }
-                    FeatureRow(title: "Simulate Milestone", milestone: "M11", status: .planned)
+                    MilestoneCelebrationRow()
                     FeatureRow(title: "What's New", milestone: "M12", status: .planned)
                 }
                 Section("Dev Tools") {
@@ -134,6 +134,18 @@ private struct TipHistoryRow: View {
             }
         }
         .task { history = await IndieAppGrowthKit.tipStore.tipHistory() }
+    }
+}
+
+/// M11 (Milestone Celebration) is real and wired up here.
+private struct MilestoneCelebrationRow: View {
+    @State private var celebrating = false
+
+    var body: some View {
+        Button("Simulate Milestone (confetti + haptic, real)") {
+            celebrating = true
+        }
+        .milestoneCelebration(trigger: $celebrating)
     }
 }
 

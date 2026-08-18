@@ -71,9 +71,10 @@ Status legend: ⬜ not started · 🚧 in progress · ✅ done
 - `CrossPromotionView` (`UI/CrossPromotionView.swift`): themed list, tapping an entry opens its App Store listing via `openURL` (reuses `AppStoreLink` from M7) and calls an optional `onTap` for analytics.
 - **Acceptance:** `PromotedAppTests.swift` covers `id` and URL construction. Demo's "Cross-Promotion" screen lists two dummy apps and opens their (placeholder) App Store listings on tap. `swift build`/`swift test` (37 tests, 3 skipped) pass.
 
-## M11 — Milestone Celebration Hook ⬜
-- `celebrate(milestone:)` generalizing M3's success feedback for arbitrary developer-reported milestones; optional bundled tip/review nudge.
-- **Acceptance:** Sample app fires a celebration from a "Simulate Milestone" test button and confirms feedback animation + optional nudges appear.
+## M11 — Milestone Celebration Hook ✅
+- `View.milestoneCelebration(trigger:reportingSignal:tipPromptController:reviewPromptController:)` (`UI/MilestoneCelebrationModifier.swift`) reuses M3's exact success feedback (`SuccessHaptic` + `ConfettiView`), fired by flipping a `Binding<Bool>` to `true` (auto-resets).
+- **Design choice**: rather than a hardcoded "celebration + tip nudge + review nudge" combo API, celebration optionally reports a named custom signal to the existing M6/M8 controllers, which already support `.customSignal(_:)` conditions — so a host app composes celebration, tip nudges, and review nudges as independently-configurable pieces instead of one rigid bundled flow.
+- **Acceptance:** Demo's "Simulate Milestone (confetti + haptic, real)" button fires a real celebration via the modifier. `swift build`/`swift test` (37 tests, 3 skipped) pass.
 
 ## M12 — What's New Prompt ⬜
 - Once-per-version card wired to M5's trigger engine (version-change condition), themed, developer-supplied content.
