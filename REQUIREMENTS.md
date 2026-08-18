@@ -52,8 +52,22 @@ IndieTipsSDK is a Swift SDK that indie developers integrate into their iOS/macOS
 - Provide an optional hook to trigger Apple's `SKStoreReviewController` review prompt after a successful tip, since a completed tip is a natural moment of goodwill to ask for a review. Off by default; host app opts in.
 - Expose that hook as a standalone public API (e.g. `IndieTipsSDK.requestReview()`) that the host app can call directly at any time, not only via the automatic post-tip trigger — so devs can invoke the review prompt from their own logic/timing if they don't want the automatic behavior.
 
+### Automatic Tip Prompt Triggers
+- Provide an opt-in engagement engine that automatically presents the bundled Tip Jar UI when developer-defined conditions are met, so devs don't have to hand-roll their own launch-counting/timing logic.
+- Supported trigger conditions (combinable, all optional, developer-configured):
+  - **App launch count** — e.g. prompt after the Nth launch.
+  - **Days since install** — e.g. prompt no earlier than N days after first launch.
+  - **Days since last prompt** — minimum cooldown between automatic prompts, to avoid nagging.
+  - **Session/usage count** — e.g. prompt after N foreground sessions, as an alternative to raw launch count.
+  - **Custom developer signal** — an API for the host app to report its own "positive moment" events (e.g. completed onboarding, hit a milestone) that the engine can also condition on.
+- All conditions are AND-combined by default (all configured conditions must be satisfied before a prompt fires); the engine evaluates conditions on each app launch/foreground.
+- Never prompt automatically if the user has already tipped, has dismissed/declined the prompt more than a developer-configured number of times, or has an active cooldown in effect.
+- Prompt state (launch count, install date, last-prompted date, dismiss count) is persisted locally on-device only (e.g. via `UserDefaults`), consistent with the SDK's no-backend, no-network-calls design.
+- The automatic prompt is fully optional and off by default; the host app must explicitly configure and enable it. Devs can also disable it and drive prompting entirely themselves via the manual UI/API.
+- Respect the same theming/customization requirements as the rest of the bundled UI when auto-presented.
+
 ### Analytics / Callbacks
-- Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled — so host apps can log analytics or show thank-you messaging.
+- Expose hooks/delegates or Combine publishers for: tip started, tip succeeded, tip failed, tip cancelled, automatic prompt shown, automatic prompt dismissed — so host apps can log analytics or show thank-you messaging.
 
 ## Non-Functional Requirements
 
