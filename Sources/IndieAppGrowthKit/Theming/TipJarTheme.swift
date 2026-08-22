@@ -65,6 +65,7 @@ public struct TipJarTheme: Equatable, Sendable {
         public var feedbackFormTitle: String
         public var feedbackFormPlaceholder: String
         public var feedbackFormSubmitButtonTitle: String
+        public var closeButtonTitle: String
 
         public init(
             tipJarTitle: String,
@@ -73,7 +74,8 @@ public struct TipJarTheme: Equatable, Sendable {
             poweredByText: String,
             feedbackFormTitle: String = "Send Feedback",
             feedbackFormPlaceholder: String = "Tell us what's on your mind…",
-            feedbackFormSubmitButtonTitle: String = "Submit"
+            feedbackFormSubmitButtonTitle: String = "Submit",
+            closeButtonTitle: String = "Close"
         ) {
             self.tipJarTitle = tipJarTitle
             self.tipJarSubtitle = tipJarSubtitle
@@ -82,6 +84,7 @@ public struct TipJarTheme: Equatable, Sendable {
             self.feedbackFormTitle = feedbackFormTitle
             self.feedbackFormPlaceholder = feedbackFormPlaceholder
             self.feedbackFormSubmitButtonTitle = feedbackFormSubmitButtonTitle
+            self.closeButtonTitle = closeButtonTitle
         }
     }
 

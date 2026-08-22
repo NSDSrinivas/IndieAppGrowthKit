@@ -4,22 +4,26 @@ import IndieAppGrowthKit
 
 /// Entry point exercising every SDK feature, one row per milestone.
 ///
-/// Each row currently shows its build status (see MILESTONES.md) rather than
-/// a real action, since most features haven't landed yet. As each milestone
-/// ships, its row should be wired to the real API instead of the placeholder.
+/// Each row is wired to the real API for its milestone (see MILESTONES.md).
+/// As new milestones land, add a row here wired to the real API rather than
+/// a placeholder.
 struct HomeView: View {
     @State private var purchaseState = PurchaseSectionState()
+    @State private var showTipJarSheet = false
+    @State private var showFeedbackFormSheet = false
 
     var body: some View {
         NavigationStack {
             List {
                 Section("Tipping") {
                     PurchaseEngineRow(state: purchaseState)
-                    NavigationLink("Bundled Tip Jar UI") {
-                        TipJarView(store: IndieAppGrowthKit.tipStore) { completion in
-                            print("Tip Jar completion: \(completion)")
-                        }
-                        .navigationTitle("Tip Jar")
+                    // On-demand trigger (e.g. a "Tip the Developer" settings
+                    // row): presented as a sheet to match how
+                    // `.automaticTipPrompt(_:)` shows the same view, so it
+                    // looks and behaves identically whether triggered
+                    // automatically or manually.
+                    Button("Bundled Tip Jar UI") {
+                        showTipJarSheet = true
                     }
                     TipHistoryRow()
                     NavigationLink("Automatic Tip Prompt") {
@@ -41,11 +45,15 @@ struct HomeView: View {
                             body: FeedbackMail.diagnosticsBody()
                         )
                     }
-                    NavigationLink("Send Feedback (bundled form)") {
-                        FeedbackFormView { text in
-                            print("Feedback submitted: \(text)")
-                        }
+                    // On-demand trigger: sheet, since `FeedbackFormView`
+                    // dismisses itself on submit — a modal compose form is
+                    // the idiomatic presentation for that (like Mail compose).
+                    Button("Send Feedback (bundled form)") {
+                        showFeedbackFormSheet = true
                     }
+                    // On-demand trigger: pushed, since this is a static,
+                    // non-modal list of other apps — the common "More Apps"
+                    // settings-row pattern, with no dismiss action of its own.
                     NavigationLink("Cross-Promotion") {
                         CrossPromotionView(apps: [
                             PromotedApp(appStoreID: "1111111111", name: "Weight Tracker", tagline: "Simple daily weight logging", systemImage: "scalemass"),
@@ -75,6 +83,12 @@ struct HomeView: View {
             .navigationTitle("IndieAppGrowthKit Demo")
             .task {
                 await purchaseState.start()
+            }
+            .tipJarSheet(isPresented: $showTipJarSheet, store: IndieAppGrowthKit.tipStore) { completion in
+                print("Tip Jar completion: \(completion)")
+            }
+            .feedbackFormSheet(isPresented: $showFeedbackFormSheet) { text in
+                print("Feedback submitted: \(text)")
             }
         }
     }

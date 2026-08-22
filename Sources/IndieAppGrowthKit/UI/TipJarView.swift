@@ -51,6 +51,7 @@ public struct TipJarView<TierContent: View>: View {
             poweredByLink
         }
         .padding(theme.metrics.padding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(theme.colors.background)
         .overlay {
             if showConfetti {
