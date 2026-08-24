@@ -45,7 +45,7 @@ public struct FeedbackFormView: View {
         .padding(theme.metrics.padding)
         .background(theme.colors.background)
         .toolbar {
-            ToolbarItem(placement: leadingButtonPlacement) {
+            ToolbarItem(placement: trailingButtonPlacement) {
                 Button(theme.strings.feedbackFormSubmitButtonTitle) {
                     onSubmit(text)
                     dismiss()
