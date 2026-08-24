@@ -11,7 +11,7 @@ private struct FeedbackFormSheetModifier: ViewModifier {
                 NavigationStack {
                     FeedbackFormView(onSubmit: onSubmit)
                         .toolbar {
-                            ToolbarItem(placement: closeButtonPlacement) {
+                            ToolbarItem(placement: leadingButtonPlacement) {
                                 Button {
                                     isPresented = false
                                 } label: {

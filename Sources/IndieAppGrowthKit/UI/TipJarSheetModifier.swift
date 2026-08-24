@@ -15,7 +15,7 @@ private struct TipJarSheetModifier: ViewModifier {
                         onCompletion(completion)
                     }
                     .toolbar {
-                        ToolbarItem(placement: closeButtonPlacement) {
+                        ToolbarItem(placement: trailingButtonPlacement) {
                             Button {
                                 isPresented = false
                             } label: {

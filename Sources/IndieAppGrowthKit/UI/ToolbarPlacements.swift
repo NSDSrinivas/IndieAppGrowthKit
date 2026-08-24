@@ -10,7 +10,7 @@ var leadingButtonPlacement: ToolbarItemPlacement {
     #endif
 }
 
-var closeButtonPlacement: ToolbarItemPlacement {
+var trailingButtonPlacement: ToolbarItemPlacement {
     #if os(iOS) || os(tvOS)
     .topBarTrailing
     #else
