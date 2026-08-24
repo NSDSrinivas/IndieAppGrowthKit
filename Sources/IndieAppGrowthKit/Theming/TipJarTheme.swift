@@ -103,8 +103,8 @@ public struct TipJarTheme: Equatable, Sendable {
     /// The theme every bundled view uses unless the host app supplies its own.
     public static let `default` = TipJarTheme(
         colors: Colors(
-            background: Color(.sRGB, white: 1, opacity: 1),
-            surface: Color(.sRGB, white: 0.95, opacity: 1),
+            background: Self.systemBackground,
+            surface: Self.secondarySystemBackground,
             accent: .accentColor,
             primaryText: .primary,
             secondaryText: .secondary
@@ -123,4 +123,28 @@ public struct TipJarTheme: Equatable, Sendable {
             poweredByText: "Powered by Indie App Growth Kit"
         )
     )
+
+    /// The system's adaptive base background, used by ``default`` so bundled
+    /// views follow light/dark mode instead of staying pinned to white.
+    private static var systemBackground: Color {
+        #if canImport(UIKit)
+        Color(uiColor: .systemBackground)
+        #elseif canImport(AppKit)
+        Color(nsColor: .windowBackgroundColor)
+        #else
+        Color(.sRGB, white: 1, opacity: 1)
+        #endif
+    }
+
+    /// The system's adaptive raised/card background, used by ``default`` for
+    /// surfaces like tip tiers and the feedback text field.
+    private static var secondarySystemBackground: Color {
+        #if canImport(UIKit)
+        Color(uiColor: .secondarySystemBackground)
+        #elseif canImport(AppKit)
+        Color(nsColor: .controlBackgroundColor)
+        #else
+        Color(.sRGB, white: 0.95, opacity: 1)
+        #endif
+    }
 }

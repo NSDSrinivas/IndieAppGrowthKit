@@ -216,19 +216,25 @@ ContentView()
 
 ### Theming
 
-Every bundled view (`TipJarView`, `FeedbackFormView`, `CrossPromotionView`, `WhatsNewView`) reads its colors, typography, metrics, and copy from a `TipJarTheme` via the `.tipJarTheme(_:)` environment modifier — nothing is hardcoded, so you can fully restyle to match your app's design system without forking any view:
+Every bundled view (`TipJarView`, `FeedbackFormView`, `CrossPromotionView`, `WhatsNewView`) reads its colors, typography, metrics, and copy from a `TipJarTheme` via the `.tipJarTheme(_:)` environment modifier — nothing is hardcoded, so you can fully restyle to match your app's design system without forking any view. Apply it as high up your view hierarchy as you want the theme to reach; omit it entirely to use `.default`, which already tracks the system's light/dark appearance automatically.
 
 ```swift
 ContentView()
     .tipJarTheme(.init(
-        colors: .init(background: .black, surface: Color(.sRGB, white: 0.15, opacity: 1), accent: .yellow, primaryText: .white, secondaryText: .gray),
+        colors: .init(
+            background: Color(.systemBackground),
+            surface: Color(.secondarySystemBackground),
+            accent: .yellow,
+            primaryText: .primary,
+            secondaryText: .secondary
+        ),
         typography: .init(title: .title2.bold(), body: .body, price: .headline, caption: .caption),
         metrics: .init(cornerRadius: 16, spacing: 12, padding: 16),
         strings: .init(tipJarTitle: "Support this app", tipJarSubtitle: "...", purchaseButtonTitle: "Tip", poweredByText: "...")
     ))
 ```
 
-Apply it as high up your view hierarchy as you want the theme to reach; omit it entirely to use `.default`.
+A custom theme replaces the colors wholesale — `TipJarTheme` doesn't merge with `.default`, so supplying your own `colors` means you own light/dark support for them too. Prefer adaptive sources (system semantic colors as above, or Asset Catalog colors with Any/Dark variants) over fixed RGB/hex values, or your custom theme will look wrong in whichever appearance you didn't design for.
 
 ### Debug overlay
 
