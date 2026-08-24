@@ -93,7 +93,8 @@ public struct TipJarView<TierContent: View>: View {
     private var poweredByLink: some View {
         Link(theme.strings.poweredByText, destination: IndieAppGrowthKitLinks.repository)
             .font(theme.typography.caption)
-            .foregroundStyle(theme.colors.secondaryText)
+            .foregroundStyle(theme.colors.accent)
+            .underline()
     }
 
     private func load() async {

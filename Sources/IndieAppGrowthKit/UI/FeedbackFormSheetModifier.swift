@@ -11,8 +11,13 @@ private struct FeedbackFormSheetModifier: ViewModifier {
                 NavigationStack {
                     FeedbackFormView(onSubmit: onSubmit)
                         .toolbar {
-                            ToolbarItem(placement: .cancellationAction) {
-                                Button(theme.strings.closeButtonTitle) { isPresented = false }
+                            ToolbarItem(placement: closeButtonPlacement) {
+                                Button {
+                                    isPresented = false
+                                } label: {
+                                    Image(systemName: "xmark")
+                                }
+                                .accessibilityLabel(theme.strings.closeButtonTitle)
                             }
                         }
                 }
