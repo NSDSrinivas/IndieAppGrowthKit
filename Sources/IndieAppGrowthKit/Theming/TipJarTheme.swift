@@ -75,7 +75,7 @@ public struct TipJarTheme: Equatable, Sendable {
             feedbackFormTitle: String = "Send Feedback",
             feedbackFormPlaceholder: String = "Tell us what's on your mind…",
             feedbackFormSubmitButtonTitle: String = "Submit",
-            closeButtonTitle: String = "Close"
+            closeButtonTitle: String = "Cancel"
         ) {
             self.tipJarTitle = tipJarTitle
             self.tipJarSubtitle = tipJarSubtitle
