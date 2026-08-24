@@ -41,15 +41,18 @@ public struct FeedbackFormView: View {
                 }
                 .padding(theme.metrics.padding / 2)
                 .background(theme.colors.surface, in: RoundedRectangle(cornerRadius: theme.metrics.cornerRadius))
-
-            Button(theme.strings.feedbackFormSubmitButtonTitle) {
-                onSubmit(text)
-                dismiss()
-            }
-            .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            .tint(theme.colors.accent)
         }
         .padding(theme.metrics.padding)
         .background(theme.colors.background)
+        .toolbar {
+            ToolbarItem(placement: leadingButtonPlacement) {
+                Button(theme.strings.feedbackFormSubmitButtonTitle) {
+                    onSubmit(text)
+                    dismiss()
+                }
+                .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .tint(theme.colors.accent)
+            }
+        }
     }
 }
