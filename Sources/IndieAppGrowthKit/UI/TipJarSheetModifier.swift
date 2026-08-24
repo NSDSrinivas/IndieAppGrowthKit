@@ -16,12 +16,9 @@ private struct TipJarSheetModifier: ViewModifier {
                     }
                     .toolbar {
                         ToolbarItem(placement: trailingButtonPlacement) {
-                            Button {
+                            Button(theme.strings.closeButtonTitle) {
                                 isPresented = false
-                            } label: {
-                                Image(systemName: "xmark")
                             }
-                            .accessibilityLabel(theme.strings.closeButtonTitle)
                         }
                     }
                 }

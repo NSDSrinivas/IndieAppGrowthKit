@@ -12,12 +12,9 @@ private struct FeedbackFormSheetModifier: ViewModifier {
                     FeedbackFormView(onSubmit: onSubmit)
                         .toolbar {
                             ToolbarItem(placement: leadingButtonPlacement) {
-                                Button {
+                                Button(theme.strings.closeButtonTitle) {
                                     isPresented = false
-                                } label: {
-                                    Image(systemName: "xmark")
                                 }
-                                .accessibilityLabel(theme.strings.closeButtonTitle)
                             }
                         }
                 }
