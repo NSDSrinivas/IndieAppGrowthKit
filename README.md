@@ -20,13 +20,13 @@ Add Indie App Growth Kit to your project via Swift Package Manager.
 https://github.com/NSDSrinivas/IndieAppGrowthKit.git
 ```
 
-Choose the `main` branch (or pin to a released tag once one exists), then add the `IndieAppGrowthKit` library product to your app target.
+Choose "Up to Next Major Version" starting at `1.0.0` (or pin to a specific released tag), then add the `IndieAppGrowthKit` library product to your app target.
 
 **Or, in another package's `Package.swift`:**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", branch: "main")
+    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", from: "1.0.0")
 ],
 targets: [
     .target(
