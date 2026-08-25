@@ -1,8 +1,10 @@
 # Changelog
 
-All notable changes to Indie App Growth Kit are documented here. The project hasn't cut a first release yet, so everything so far is under Unreleased. See [MILESTONES.md](MILESTONES.md) for the detailed build log behind each entry.
+All notable changes to Indie App Growth Kit are documented here. Releases are tagged `vX.Y.Z` and follow [Semantic Versioning](https://semver.org/). See [MILESTONES.md](MILESTONES.md) for the detailed build log behind each entry.
 
 ## Unreleased
+
+## [1.0.0] - 2026-08-25
 
 ### Added
 - Core StoreKit 2 tip purchase engine (`TipStore`, `StoreProviding`), with restore-on-launch and full verification.
