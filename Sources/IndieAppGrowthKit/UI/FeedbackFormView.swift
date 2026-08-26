@@ -65,16 +65,13 @@ public struct FeedbackFormView: View {
         RoundedRectangle(cornerRadius: theme.metrics.cornerRadius + 8, style: .continuous)
     }
 
-    @ViewBuilder
+    // Not `.glassEffect(...)`: that API only exists in the iOS/macOS 26 SDK,
+    // and this SDK is distributed as source via SPM, so any consumer
+    // building with an older Xcode would fail to compile it at all — a
+    // runtime `#available` check can't paper over a missing compile-time
+    // symbol. `.regularMaterial` renders a comparable glass look everywhere.
     private var entryBackground: some View {
-        if #available(iOS 26.0, macOS 26.0, *) {
-            entryShape
-                .fill(.clear)
-                .glassEffect(.regular, in: entryShape)
-        } else {
-            entryShape
-                .fill(.regularMaterial)
-        }
+        entryShape.fill(.regularMaterial)
     }
 
     private var entryBorder: some View {
