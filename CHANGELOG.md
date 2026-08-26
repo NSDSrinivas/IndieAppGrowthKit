@@ -4,7 +4,7 @@ All notable changes to Indie App Growth Kit are documented here. Releases are ta
 
 ## Unreleased
 
-## [1.0.0] - 2026-08-25
+## [1.0.0] - 2026-08-26
 
 ### Added
 - Core StoreKit 2 tip purchase engine (`TipStore`, `StoreProviding`), with restore-on-launch and full verification.
