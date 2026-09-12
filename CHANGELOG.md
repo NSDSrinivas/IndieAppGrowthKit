@@ -4,16 +4,31 @@ All notable changes to Indie App Growth Kit are documented here. Releases are ta
 
 ## Unreleased
 
+### Changed
+
+- Centralized release and migration details in this changelog, with a README callout linking here.
+
 ## [2.0.0] - 2026-09-12
 
 ### Changed
-- Refreshed the README with all seven offerings, integration lifecycle guidance, and a 1.x migration guide.
+- Refreshed the README with all seven offerings, integration lifecycle guidance; the 1.x migration guide is maintained below.
 - Review pre-prompts now offer “Rate App” and “Maybe Later”; deferring dismisses the alert without a feedback action.
 - Added optional `Configuration.supportEmail` and `FeedbackMail.openComposer(subject:body:)` for host-owned support buttons. Missing or malformed recipients do not open a mail client.
 
 ### Removed
 - Breaking: removed `FeedbackFormView`, `.feedbackFormSheet(...)`, feedback form theme strings, and the review pre-prompt’s `onNegativeResponse` callback. Replace form entry points with your own button calling `FeedbackMail.openComposer`; remove the callback from review modifiers.
 
+### Migrating from 1.x
+
+Version 2.0.0 removes the in-app feedback flow. Update your package dependency to `2.0.0` and make these changes:
+
+| Removed API | Replacement |
+| --- | --- |
+| `FeedbackFormView` and `.feedbackFormSheet(...)` | Your own support button calling `FeedbackMail.openComposer(subject:body:)` |
+| `.automaticReviewPrompt(..., onNegativeResponse:)` or its trailing callback | Remove the callback; “Maybe Later” only dismisses the alert |
+| `feedbackFormTitle`, `feedbackFormPlaceholder`, `feedbackFormSubmitButtonTitle` theme strings | Remove these initializer arguments and property accesses |
+
+Provide `supportEmail` in configuration to use the new recipient-free email call. The existing explicit-recipient `FeedbackMail.openComposer(to:subject:body:)` API remains available. Neither API opens anything for a missing or empty address. Existing tip and review trigger state is retained; this release does not reset cooldowns.
 
 ## [1.0.0] - 2026-08-26
 

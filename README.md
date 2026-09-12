@@ -2,6 +2,9 @@
 
 A Swift SDK that helps indie developers grow and sustain their iOS/macOS apps: voluntary tips, App Store review prompts, sharing, email support, cross-promotion, and milestone celebrations — all client-side, no backend required.
 
+> [!NOTE]
+> Release history, breaking changes, and upgrade instructions are maintained in [CHANGELOG.md](CHANGELOG.md). Upgrading from 1.x? See the [2.0.0 migration guide](CHANGELOG.md#migrating-from-1x).
+
 ## Offerings
 
 | Feature | What the SDK provides | How your app uses it |
@@ -16,7 +19,7 @@ A Swift SDK that helps indie developers grow and sustain their iOS/macOS apps: v
 
 Supporting tools include shared theming, independent local prompt tracking, configurable trigger conditions, and a debug overlay. No backend is required. Email support has no bundled form or automatic entry point.
 
-This README describes **2.0.0**. See [CHANGELOG.md](CHANGELOG.md) for release history and the [migration guide](#migrating-from-1x) below. [REQUIREMENTS.md](REQUIREMENTS.md) and [MILESTONES.md](MILESTONES.md) preserve the original specification and implementation history.
+This README covers the current offerings and integration guide. [REQUIREMENTS.md](REQUIREMENTS.md) and [MILESTONES.md](MILESTONES.md) preserve the original specification and implementation history.
 
 ## Requirements
 
@@ -283,18 +286,6 @@ The SDK's own automatic prompts set the precedent — match it when you trigger 
 | Review pre-prompt | `.alert` (via `.automaticReviewPrompt`) | n/a — `ReviewPrompt.request()` is a system dialog |
 | `WhatsNewView` | `.sheet` (via `.automaticWhatsNew`) | n/a — inherently version-triggered |
 | `CrossPromotionView` | — (no automatic trigger) | Push (`NavigationLink`) — it's a static list, not a modal flow |
-
-## Migrating from 1.x
-
-Version 2.0.0 removes the in-app feedback flow. Update your package dependency to `2.0.0` and make these changes:
-
-| Removed API | Replacement |
-| --- | --- |
-| `FeedbackFormView` and `.feedbackFormSheet(...)` | Your own support button calling `FeedbackMail.openComposer(subject:body:)` |
-| `.automaticReviewPrompt(..., onNegativeResponse:)` or its trailing callback | Remove the callback; “Maybe Later” only dismisses the alert |
-| `feedbackFormTitle`, `feedbackFormPlaceholder`, `feedbackFormSubmitButtonTitle` theme strings | Remove these initializer arguments and property accesses |
-
-Provide `supportEmail` in configuration to use the new recipient-free email call. The existing explicit-recipient `FeedbackMail.openComposer(to:subject:body:)` API remains available. Neither API opens anything for a missing or empty address. Existing tip and review trigger state is retained; this release does not reset cooldowns.
 
 ## Status
 
