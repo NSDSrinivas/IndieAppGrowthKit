@@ -10,7 +10,6 @@ import IndieAppGrowthKit
 struct HomeView: View {
     @State private var purchaseState = PurchaseSectionState()
     @State private var showTipJarSheet = false
-    @State private var showFeedbackFormSheet = false
 
     var body: some View {
         NavigationStack {
@@ -40,16 +39,9 @@ struct HomeView: View {
                     }
                     Button("Send Feedback (mail composer, real)") {
                         FeedbackMail.openComposer(
-                            to: "support@example.com",
                             subject: "Feedback",
                             body: FeedbackMail.diagnosticsBody()
                         )
-                    }
-                    // On-demand trigger: sheet, since `FeedbackFormView`
-                    // dismisses itself on submit — a modal compose form is
-                    // the idiomatic presentation for that (like Mail compose).
-                    Button("Send Feedback (bundled form)") {
-                        showFeedbackFormSheet = true
                     }
                     // On-demand trigger: pushed, since this is a static,
                     // non-modal list of other apps — the common "More Apps"
@@ -87,9 +79,7 @@ struct HomeView: View {
             .tipJarSheet(isPresented: $showTipJarSheet, store: IndieAppGrowthKit.tipStore) { completion in
                 print("Tip Jar completion: \(completion)")
             }
-            .feedbackFormSheet(isPresented: $showFeedbackFormSheet) { text in
-                print("Feedback submitted: \(text)")
-            }
+
         }
     }
 }

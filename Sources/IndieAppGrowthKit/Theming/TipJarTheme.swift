@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Full look-and-feel configuration for every view the SDK bundles (not just
-/// the Tip Jar — the name predates the Feedback form etc., kept for API
+/// the Tip Jar — the name is kept for API
 /// stability) — colors, typography, shape/spacing, and all user-facing copy.
 /// Every bundled view reads its appearance from a `TipJarTheme` (via the
 /// `\.tipJarTheme` environment value) rather than hardcoding any of it, so a
@@ -62,9 +62,6 @@ public struct TipJarTheme: Equatable, Sendable {
         public var tipJarSubtitle: String
         public var purchaseButtonTitle: String
         public var poweredByText: String
-        public var feedbackFormTitle: String
-        public var feedbackFormPlaceholder: String
-        public var feedbackFormSubmitButtonTitle: String
         public var closeButtonTitle: String
 
         public init(
@@ -72,18 +69,12 @@ public struct TipJarTheme: Equatable, Sendable {
             tipJarSubtitle: String,
             purchaseButtonTitle: String,
             poweredByText: String,
-            feedbackFormTitle: String = "Send Feedback",
-            feedbackFormPlaceholder: String = "Tell us what's on your mind…",
-            feedbackFormSubmitButtonTitle: String = "Submit",
             closeButtonTitle: String = "Cancel"
         ) {
             self.tipJarTitle = tipJarTitle
             self.tipJarSubtitle = tipJarSubtitle
             self.purchaseButtonTitle = purchaseButtonTitle
             self.poweredByText = poweredByText
-            self.feedbackFormTitle = feedbackFormTitle
-            self.feedbackFormPlaceholder = feedbackFormPlaceholder
-            self.feedbackFormSubmitButtonTitle = feedbackFormSubmitButtonTitle
             self.closeButtonTitle = closeButtonTitle
         }
     }
@@ -137,7 +128,7 @@ public struct TipJarTheme: Equatable, Sendable {
     }
 
     /// The system's adaptive raised/card background, used by ``default`` for
-    /// surfaces like tip tiers and the feedback text field.
+    /// surfaces like tip tiers.
     private static var secondarySystemBackground: Color {
         #if canImport(UIKit)
         Color(uiColor: .secondarySystemBackground)

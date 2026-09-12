@@ -4,6 +4,17 @@ All notable changes to Indie App Growth Kit are documented here. Releases are ta
 
 ## Unreleased
 
+## [2.0.0] - 2026-09-12
+
+### Changed
+- Refreshed the README with all seven offerings, integration lifecycle guidance, and a 1.x migration guide.
+- Review pre-prompts now offer “Rate App” and “Maybe Later”; deferring dismisses the alert without a feedback action.
+- Added optional `Configuration.supportEmail` and `FeedbackMail.openComposer(subject:body:)` for host-owned support buttons. Missing or malformed recipients do not open a mail client.
+
+### Removed
+- Breaking: removed `FeedbackFormView`, `.feedbackFormSheet(...)`, feedback form theme strings, and the review pre-prompt’s `onNegativeResponse` callback. Replace form entry points with your own button calling `FeedbackMail.openComposer`; remove the callback from review modifiers.
+
+
 ## [1.0.0] - 2026-08-26
 
 ### Added

@@ -1,8 +1,22 @@
 # Indie App Growth Kit
 
-A Swift SDK that helps indie developers grow and sustain their iOS/macOS apps: voluntary tips, App Store review prompts, sharing, feedback collection, cross-promotion, and milestone celebrations — all client-side, no backend required.
+A Swift SDK that helps indie developers grow and sustain their iOS/macOS apps: voluntary tips, App Store review prompts, sharing, email support, cross-promotion, and milestone celebrations — all client-side, no backend required.
 
-See [REQUIREMENTS.md](REQUIREMENTS.md) for the full feature spec and [MILESTONES.md](MILESTONES.md) for the feature-by-feature build log.
+## Offerings
+
+| Feature | What the SDK provides | How your app uses it |
+| --- | --- | --- |
+| Tip jar | StoreKit 2 purchases, themed tip UI, local tip count and totals by currency | Present manually or configure automatic prompts; automatic prompts stop after a tip |
+| App Store reviews | Native review requests with an optional **Rate App / Maybe Later** alert | Request directly or configure automatic conditions and cooldowns |
+| App sharing | Native sharing with your App Store link | Place `ShareAppButton` in your UI |
+| Email support | Opens the email client using an optional support address | Call `FeedbackMail.openComposer()` from your own button or settings entry |
+| Cross-promotion | Themed list of your other apps linking to their App Store pages | Present `CrossPromotionView` from your own navigation |
+| Milestone celebrations | Confetti and supported haptics for achievements or other app events | Set a trigger binding; optionally report a custom prompt signal |
+| What’s New | Themed update sheet, shown once for each detected app version | Supply your release content and attach `.automaticWhatsNew(...)` |
+
+Supporting tools include shared theming, independent local prompt tracking, configurable trigger conditions, and a debug overlay. No backend is required. Email support has no bundled form or automatic entry point.
+
+This README describes **2.0.0**. See [CHANGELOG.md](CHANGELOG.md) for release history and the [migration guide](#migrating-from-1x) below. [REQUIREMENTS.md](REQUIREMENTS.md) and [MILESTONES.md](MILESTONES.md) preserve the original specification and implementation history.
 
 ## Requirements
 
@@ -20,13 +34,13 @@ Add Indie App Growth Kit to your project via Swift Package Manager.
 https://github.com/NSDSrinivas/IndieAppGrowthKit.git
 ```
 
-Choose "Up to Next Major Version" starting at `1.0.0` (or pin to a specific released tag), then add the `IndieAppGrowthKit` library product to your app target.
+Choose "Up to Next Major Version" starting at `2.0.0` (or pin to a specific released tag), then add the `IndieAppGrowthKit` library product to your app target.
 
 **Or, in another package's `Package.swift`:**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", from: "1.0.0")
+    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", from: "2.0.0")
 ],
 targets: [
     .target(
@@ -52,7 +66,8 @@ struct YourApp: App {
         IndieAppGrowthKit.configure(
             .init(
                 tipProductIdentifiers: ["com.yourapp.tip.small", "com.yourapp.tip.medium", "com.yourapp.tip.large"],
-                appStoreID: "123456789"
+                appStoreID: "123456789",
+                supportEmail: "support@example.com" // Optional
             )
         )
     }
@@ -65,11 +80,20 @@ struct YourApp: App {
 }
 ```
 
-The tip product identifiers must match In-App Purchase (consumable) products you've created in App Store Connect; `appStoreID` is your app's numeric App Store ID, used for sharing links and review prompts.
+The tip product identifiers must match In-App Purchase (consumable) products you've created in App Store Connect; `appStoreID` is your app’s numeric App Store ID, used for sharing links. Native review requests use the active app window. Omit `supportEmail` if you do not offer email support.
 
 ## Integration guide
 
 `Demo/IndieAppGrowthKitDemo/` is a runnable reference implementation of everything below (`swift run IndieAppGrowthKitDemo`) — when in doubt, check how a screen there wires things up.
+
+### Integration checklist
+
+1. Install the package and configure it once before accessing `tipStore` or `configuration`.
+2. Choose the features your app needs and place their views or buttons in your own navigation.
+3. For automatic tip/review prompts, retain each controller and explicitly record launches, sessions, or custom signals on that controller.
+4. Attach automatic modifiers to the screen where you want the prompt evaluated. They check on appearance; recording a signal does not itself present a prompt. Record required events before presenting that screen.
+5. Supply cooldown conditions and coordinate prompt placement so multiple prompts do not compete on the same screen.
+6. Apply a theme if needed and use the debug overlay to inspect conditions during development.
 
 ### Tipping
 
@@ -115,9 +139,9 @@ ContentView()
 
 ### App Store reviews
 
-`ReviewPrompt.request()` triggers Apple's native review prompt directly — call it any time (e.g. a manual "Rate this App" settings button), no UI to present since it's a system dialog.
+`ReviewPrompt.request()` triggers Apple's native review prompt directly — call it any time (e.g. a manual "Rate this App" settings button), the SDK provides no custom review form. The call requests the system dialog; the SDK does not track whether a rating was submitted.
 
-For automatic prompting, use `AutomaticReviewPromptController` + `.automaticReviewPrompt(_:)`, same condition system as tipping but under its own independent namespace/state:
+For automatic prompting, use `AutomaticReviewPromptController` + `.automaticReviewPrompt(_:)`, same condition system as tipping but under its own independent namespace/state. Record review launches with `await reviewPromptController.recordLaunch()`; recording a launch on the tip controller does not update the review controller:
 
 ```swift
 let reviewPromptController = AutomaticReviewPromptController(
@@ -130,12 +154,11 @@ ContentView()
     .automaticReviewPrompt(
         controller: reviewPromptController,
         prePromptTitle: "Enjoying the app?",
-        prePromptMessage: "We'd love to hear your feedback.",
-        onNegativeResponse: { showFeedbackFormSheet = true }
+        prePromptMessage: "We hope you’re enjoying using My App. Would you like to take a moment to rate it?"
     )
 ```
 
-Passing `prePromptTitle` shows a lightweight "Enjoying the app?" alert first; a negative response routes to `onNegativeResponse` (typically your feedback flow) instead of the system prompt, so unhappy users go to private feedback rather than a public bad review. Omit it to go straight to `ReviewPrompt.request()`.
+Passing `prePromptTitle` shows an optional alert with **Rate App** and **Maybe Later**. Rate App requests Apple’s review dialog; Maybe Later only dismisses the alert and records a dismissal. The configured cooldown starts when the pre-prompt is presented. Omit `prePromptTitle` to request the system dialog directly.
 
 ### Sharing
 
@@ -147,27 +170,29 @@ ShareAppButton(message: "Check out this app!")
 
 Uses `appStoreID` from `configure(_:)` by default; pass `appStoreID:` explicitly to share a different app.
 
-### Feedback
+### Email support
 
-Two options, pick based on how much friction you want:
+The SDK provides an email-opening API only. Your app owns any support button or settings entry; no feedback view is bundled or offered by review prompts.
 
-- `FeedbackMail.openComposer(to:subject:body:)` hands off to the user's Mail app (with `FeedbackMail.diagnosticsBody()` available to prefill app/OS version diagnostics).
-- `FeedbackFormView` collects feedback in-app. For an on-demand entry point, present it with `.feedbackFormSheet(_:)`:
+Provide an optional support address at configuration:
 
 ```swift
-struct SettingsView: View {
-    @State private var showFeedback = false
+IndieAppGrowthKit.configure(.init(
+    tipProductIdentifiers: ["com.example.tip.small"],
+    appStoreID: "1234567890",
+    supportEmail: "support@example.com"
+))
+```
 
-    var body: some View {
-        List {
-            Button("Send Feedback") { showFeedback = true }
-        }
-        .feedbackFormSheet(isPresented: $showFeedback) { text in
-            // send `text` wherever your feedback should go — the SDK makes no network calls of its own
-        }
-    }
+Call from your own UI:
+
+```swift
+Button("Email Support") {
+    FeedbackMail.openComposer(subject: "Support", body: "")
 }
 ```
+
+If no support email was provided, the call returns `false` without opening anything. You can also supply a recipient directly with `FeedbackMail.openComposer(to:subject:body:)`. Both paths reject empty or malformed recipients. The API opens the default email client via `mailto:`; it does not send email. `FeedbackMail.diagnosticsBody()` is available if you choose to include diagnostics.
 
 ### Cross-promotion
 
@@ -216,7 +241,7 @@ ContentView()
 
 ### Theming
 
-Every bundled view (`TipJarView`, `FeedbackFormView`, `CrossPromotionView`, `WhatsNewView`) reads its colors, typography, metrics, and copy from a `TipJarTheme` via the `.tipJarTheme(_:)` environment modifier — nothing is hardcoded, so you can fully restyle to match your app's design system without forking any view. Apply it as high up your view hierarchy as you want the theme to reach; omit it entirely to use `.default`, which already tracks the system's light/dark appearance automatically.
+Bundled views (`TipJarView`, `CrossPromotionView`, `WhatsNewView`) use `TipJarTheme` for shared styling via the `.tipJarTheme(_:)` environment modifier. The theme exposes colors, typography, metrics, and tip-jar copy. Review pre-prompt title and message are configured on its modifier; its button labels are “Rate App” and “Maybe Later”. Apply it as high up your view hierarchy as you want the theme to reach; omit it entirely to use `.default`, which already tracks the system's light/dark appearance automatically.
 
 ```swift
 ContentView()
@@ -255,14 +280,25 @@ The SDK's own automatic prompts set the precedent — match it when you trigger 
 | View | Automatic presentation | On-demand presentation |
 | --- | --- | --- |
 | `TipJarView` | `.sheet` (via `.automaticTipPrompt`) | `.tipJarSheet(_:)` |
-| `FeedbackFormView` | — (no automatic trigger) | `.feedbackFormSheet(_:)` |
 | Review pre-prompt | `.alert` (via `.automaticReviewPrompt`) | n/a — `ReviewPrompt.request()` is a system dialog |
 | `WhatsNewView` | `.sheet` (via `.automaticWhatsNew`) | n/a — inherently version-triggered |
 | `CrossPromotionView` | — (no automatic trigger) | Push (`NavigationLink`) — it's a static list, not a modal flow |
 
+## Migrating from 1.x
+
+Version 2.0.0 removes the in-app feedback flow. Update your package dependency to `2.0.0` and make these changes:
+
+| Removed API | Replacement |
+| --- | --- |
+| `FeedbackFormView` and `.feedbackFormSheet(...)` | Your own support button calling `FeedbackMail.openComposer(subject:body:)` |
+| `.automaticReviewPrompt(..., onNegativeResponse:)` or its trailing callback | Remove the callback; “Maybe Later” only dismisses the alert |
+| `feedbackFormTitle`, `feedbackFormPlaceholder`, `feedbackFormSubmitButtonTitle` theme strings | Remove these initializer arguments and property accesses |
+
+Provide `supportEmail` in configuration to use the new recipient-free email call. The existing explicit-recipient `FeedbackMail.openComposer(to:subject:body:)` API remains available. Neither API opens anything for a missing or empty address. Existing tip and review trigger state is retained; this release does not reset cooldowns.
+
 ## Status
 
-This SDK is under active development. The public API is not yet stable. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **2.0.0**. Swift Package Manager versions come from Git tags; `Package.swift` does not contain a package version. See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

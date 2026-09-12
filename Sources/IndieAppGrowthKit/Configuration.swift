@@ -10,9 +10,13 @@ extension IndieAppGrowthKit {
         /// The host app's App Store ID, used for sharing and review prompts.
         public var appStoreID: String
 
-        public init(tipProductIdentifiers: [String], appStoreID: String) {
+        /// Optional recipient for email support, opened only by an explicit host-app action.
+        public var supportEmail: String?
+
+        public init(tipProductIdentifiers: [String], appStoreID: String, supportEmail: String? = nil) {
             self.tipProductIdentifiers = tipProductIdentifiers
             self.appStoreID = appStoreID
+            self.supportEmail = supportEmail
         }
     }
 }

@@ -29,6 +29,9 @@ public enum IndieAppGrowthKit {
         return configuration
     }
 
+    /// Configured support recipient, or nil before configuration.
+    public static var supportEmail: String? { state.configuration?.supportEmail }
+
     private final class State: @unchecked Sendable {
         var configuration: Configuration?
         var tipStore: TipStore?

@@ -11,7 +11,8 @@ struct DemoApp: App {
                     "com.indieappgrowthkit.demo.tip.medium",
                     "com.indieappgrowthkit.demo.tip.large",
                 ],
-                appStoreID: "0000000000"
+                appStoreID: "0000000000",
+                supportEmail: "support@example.com"
             )
         )
     }

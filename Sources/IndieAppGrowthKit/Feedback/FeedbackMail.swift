@@ -5,23 +5,24 @@ import UIKit
 import AppKit
 #endif
 
-/// Opens the user's default mail client with a feedback email pre-addressed
-/// and pre-filled, via a `mailto:` link. Deliberately not built on
-/// `MFMailComposeViewController` (which requires Message UI entitlements,
-/// only works when Mail is configured, and needs a `UIViewControllerRepresentable`
-/// + delegate to bridge into SwiftUI): a `mailto:` link works everywhere the
-/// user has *any* mail app configured, on both platforms, with a much smaller
-/// surface for bugs — the tradeoff is it hands off to the Mail app rather
-/// than composing in-place.
+/// Opens the user’s email client via `mailto:`. The host app owns the button or settings entry.
 public enum FeedbackMail {
-    /// Opens a mail composer addressed to `email`, with `subject` and `body`
-    /// pre-filled. Returns `false` if no URL could be constructed or the
-    /// platform couldn't open it (e.g. no mail app configured).
+    /// Opens email support using the configured recipient. No-op if none was provided.
+    /// Returns whether the request was handed to the system, not whether email was sent.
     @discardableResult
     @MainActor
-    public static func openComposer(to email: String, subject: String, body: String) -> Bool {
+    public static func openComposer(subject: String = "Feedback", body: String = "") -> Bool {
+        openComposer(to: IndieAppGrowthKit.supportEmail, subject: subject, body: body)
+    }
+
+    /// Opens email support using an explicitly supplied recipient.
+    /// Returns false for missing/invalid recipients or an unavailable mail client.
+    @discardableResult
+    @MainActor
+    public static func openComposer(to email: String?, subject: String = "Feedback", body: String = "") -> Bool {
         guard let url = composeURL(to: email, subject: subject, body: body) else { return false }
         #if canImport(UIKit)
+        guard UIApplication.shared.canOpenURL(url) else { return false }
         UIApplication.shared.open(url)
         return true
         #elseif canImport(AppKit)
@@ -31,14 +32,22 @@ public enum FeedbackMail {
         #endif
     }
 
-    static func composeURL(to email: String, subject: String, body: String) -> URL? {
-        var allowed = CharacterSet.urlQueryAllowed
-        allowed.remove(charactersIn: "&=")
-        guard let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: allowed),
-              let encodedBody = body.addingPercentEncoding(withAllowedCharacters: allowed) else {
-            return nil
-        }
-        return URL(string: "mailto:\(email)?subject=\(encodedSubject)&body=\(encodedBody)")
+    static func composeURL(to email: String?, subject: String, body: String) -> URL? {
+        guard let email = email?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !email.isEmpty else { return nil }
+        let parts = email.split(separator: "@", omittingEmptySubsequences: false)
+        guard parts.count == 2, parts.allSatisfy({ !$0.isEmpty }),
+              email.rangeOfCharacter(from: .whitespacesAndNewlines) == nil,
+              email.rangeOfCharacter(from: .controlCharacters) == nil,
+              email.rangeOfCharacter(from: CharacterSet(charactersIn: "?,;<>")) == nil else { return nil }
+        var components = URLComponents()
+        components.scheme = "mailto"
+        components.path = email
+        components.queryItems = [
+            URLQueryItem(name: "subject", value: subject),
+            URLQueryItem(name: "body", value: body)
+        ]
+        return components.url
     }
 
     /// A default feedback body prefilled with app/device diagnostics, so the
