@@ -4,6 +4,8 @@ All notable changes to Indie App Growth Kit are documented here. Releases are ta
 
 ## Unreleased
 
+## [2.1.0] - 2026-09-12
+
 ### Added
 
 - Optional `AutomaticReviewPromptController(resetOnAppVersionChange: true)` resets review activity and cooldowns when the consumer app’s public version changes. Defaults to false; preserves the install date and uses the first observed version as a baseline.

@@ -37,13 +37,13 @@ Add Indie App Growth Kit to your project via Swift Package Manager.
 https://github.com/NSDSrinivas/IndieAppGrowthKit.git
 ```
 
-Choose "Up to Next Major Version" starting at `2.0.0` (or pin to a specific released tag), then add the `IndieAppGrowthKit` library product to your app target.
+Choose "Up to Next Major Version" starting at `2.1.0` (or pin to a specific released tag), then add the `IndieAppGrowthKit` library product to your app target.
 
 **Or, in another package's `Package.swift`:**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", from: "2.0.0")
+    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", from: "2.1.0")
 ],
 targets: [
     .target(
@@ -302,7 +302,7 @@ The SDK's own automatic prompts set the precedent — match it when you trigger 
 
 ## Status
 
-Current release: **2.0.0**. Swift Package Manager versions come from Git tags; `Package.swift` does not contain a package version. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **2.1.0**. Swift Package Manager versions come from Git tags; `Package.swift` does not contain a package version. See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
