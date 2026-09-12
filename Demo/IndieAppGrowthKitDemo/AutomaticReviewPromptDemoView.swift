@@ -9,7 +9,7 @@ struct AutomaticReviewPromptDemoView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("Choose Rate App to request the system review dialog, or Maybe Later to dismiss the alert.")
+            Text("Choose Rate App to open the App Store review page, or Maybe Later to dismiss the alert.")
                 .font(.caption)
                 .multilineTextAlignment(.center)
         }

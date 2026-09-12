@@ -4,6 +4,19 @@ All notable changes to Indie App Growth Kit are documented here. Releases are ta
 
 ## Unreleased
 
+## [2.2.0] - 2026-09-12
+
+### Added
+
+- `ReviewPrompt.openReviewPage(appStoreID:)` opens the App Store write-review page for explicit user actions, defaulting to the configured app ID and returning the system URL-opening result.
+
+- Added a [review integration guide](Documentation/ReviewIntegration.md) covering recommended user-action versus automatic usage, opening results, and migration. Linked it from the README and updated installation examples to 2.2.0.
+
+### Fixed
+
+- The review pre-prompt’s “Rate App” action now opens the review page instead of making a suppressible native request. Automatic requests without a pre-prompt still use StoreKit.
+- Updated manual review examples to use `openReviewPage()`; consumers should migrate Settings buttons from `request()` to this API.
+
 ## [2.1.0] - 2026-09-12
 
 ### Added

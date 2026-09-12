@@ -31,8 +31,8 @@ struct HomeView: View {
                 }
                 Section("Growth") {
                     ShareAppButton(message: "Check out this app!")
-                    Button("Request Review (manual, real)") {
-                        ReviewPrompt.request()
+                    Button("Rate App (App Store)") {
+                        Task { await ReviewPrompt.openReviewPage() }
                     }
                     NavigationLink("Automatic Review Prompt") {
                         AutomaticReviewPromptDemoView()

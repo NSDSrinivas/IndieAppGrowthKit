@@ -21,7 +21,9 @@ private struct AutomaticReviewPromptModifier: ViewModifier {
                 }
             }
             .alert(prePromptTitle ?? "", isPresented: $showingPrePrompt) {
-                Button("Rate App") { ReviewPrompt.request() }
+                Button("Rate App") {
+                    Task { await ReviewPrompt.openReviewPage() }
+                }
                 Button("Maybe Later", role: .cancel) {
                     Task { await controller.recordDismiss() }
                 }
@@ -37,6 +39,8 @@ extension View {
     /// Automatically requests an App Store review when `controller`'s
     /// configured conditions are met (checked once when this view appears).
     /// Pass `prePromptTitle` to offer “Rate App” and “Maybe Later” first.
+    /// “Rate App” opens the App Store review page; without a pre-prompt,
+    /// the system review request remains subject to Apple’s display policy.
     /// Deferring only dismisses the alert; the configured cooldown still applies.
     public func automaticReviewPrompt(
         controller: AutomaticReviewPromptController,

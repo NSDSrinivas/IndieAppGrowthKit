@@ -10,7 +10,7 @@ A Swift SDK that helps indie developers grow and sustain their iOS/macOS apps: v
 | Feature | What the SDK provides | How your app uses it |
 | --- | --- | --- |
 | Tip jar | StoreKit 2 purchases, themed tip UI, local tip count and totals by currency | Present manually or configure automatic prompts; automatic prompts stop after a tip |
-| App Store reviews | Native review requests with an optional **Rate App / Maybe Later** alert | Request directly or configure automatic conditions and cooldowns |
+| App Store reviews | Direct review-page opening for user actions; native requests for automatic opportunities | Use `openReviewPage()` for buttons, or configure automatic conditions and cooldowns |
 | App sharing | Native sharing with your App Store link | Place `ShareAppButton` in your UI |
 | Email support | Opens the email client using an optional support address | Call `FeedbackMail.openComposer()` from your own button or settings entry |
 | Cross-promotion | Themed list of your other apps linking to their App Store pages | Present `CrossPromotionView` from your own navigation |
@@ -19,7 +19,7 @@ A Swift SDK that helps indie developers grow and sustain their iOS/macOS apps: v
 
 Supporting tools include shared theming, independent local prompt tracking, configurable trigger conditions, and a debug overlay. No backend is required. Email support has no bundled form or automatic entry point.
 
-This README covers the current offerings and integration guide. [REQUIREMENTS.md](REQUIREMENTS.md) and [MILESTONES.md](MILESTONES.md) preserve the original specification and implementation history.
+Start with the [Quickstart](#quickstart), then follow the feature documentation below. For review buttons, alerts, automatic prompts, and migration examples, refer to the [App Store review integration guide](Documentation/ReviewIntegration.md). [REQUIREMENTS.md](REQUIREMENTS.md) and [MILESTONES.md](MILESTONES.md) preserve the original specification and implementation history.
 
 ## Requirements
 
@@ -37,13 +37,13 @@ Add Indie App Growth Kit to your project via Swift Package Manager.
 https://github.com/NSDSrinivas/IndieAppGrowthKit.git
 ```
 
-Choose "Up to Next Major Version" starting at `2.1.0` (or pin to a specific released tag), then add the `IndieAppGrowthKit` library product to your app target.
+Choose "Up to Next Major Version" starting at `2.2.0` (or pin to a specific released tag), then add the `IndieAppGrowthKit` library product to your app target.
 
 **Or, in another package's `Package.swift`:**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", from: "2.1.0")
+    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", from: "2.2.0")
 ],
 targets: [
     .target(
@@ -83,7 +83,7 @@ struct YourApp: App {
 }
 ```
 
-The tip product identifiers must match In-App Purchase (consumable) products you've created in App Store Connect; `appStoreID` is your app’s numeric App Store ID, used for sharing links. Native review requests use the active app window. Omit `supportEmail` if you do not offer email support.
+The tip product identifiers must match In-App Purchase (consumable) products you've created in App Store Connect; `appStoreID` is your app’s numeric App Store ID, used for sharing and direct review links. Native review requests use the active app window. Omit `supportEmail` if you do not offer email support.
 
 ## Integration guide
 
@@ -142,7 +142,21 @@ ContentView()
 
 ### App Store reviews
 
-`ReviewPrompt.request()` triggers Apple's native review prompt directly — call it any time (e.g. a manual "Rate this App" settings button), the SDK provides no custom review form. The call requests the system dialog; the SDK does not track whether a rating was submitted.
+> **Recommended:** Use the direct review page for user actions and the native prompt for automatic opportunities. Read the [review integration guide](Documentation/ReviewIntegration.md) before integrating or upgrading.
+
+Use `ReviewPrompt.openReviewPage()` for a Settings button or another explicit user action. The SDK builds and opens the App Store write-review link using your configured `appStoreID`; consumers do not need URL or platform-specific code.
+
+```swift
+Button("Rate Number Circuit") {
+    Task { await ReviewPrompt.openReviewPage() }
+}
+```
+
+Pass `appStoreID:` to open another app’s review page. The async return value is `false` for an invalid ID or a failed system open request; `true` means the system opened the URL, not that a review was submitted. Configure the SDK before using the default ID.
+
+`ReviewPrompt.request()` requests Apple's native in-app dialog for automatic opportunities. Apple may suppress it, so do not use it for a button tap. Existing manual callers should switch to `openReviewPage()`. The direct link avoids prompt suppression, but page availability, connectivity, and review submission remain outside the SDK’s control. See [Apple’s review guidance](https://developer.apple.com/documentation/storekit/requesting-app-store-reviews).
+
+When an automatic pre-prompt is configured, its “Rate App” action opens the App Store review page. Without a pre-prompt, automatic prompting uses the native system request.
 
 For automatic prompting, use `AutomaticReviewPromptController` + `.automaticReviewPrompt(_:)`, same condition system as tipping but under its own independent namespace/state. Record review launches with `await reviewPromptController.recordLaunch()`; recording a launch on the tip controller does not update the review controller:
 
@@ -161,7 +175,7 @@ ContentView()
     )
 ```
 
-Passing `prePromptTitle` shows an optional alert with **Rate App** and **Maybe Later**. Rate App requests Apple’s review dialog; Maybe Later only dismisses the alert and records a dismissal. The configured cooldown starts when the pre-prompt is presented. Omit `prePromptTitle` to request the system dialog directly.
+Passing `prePromptTitle` shows an optional alert with **Rate App** and **Maybe Later**. Rate App opens the App Store write-review page; Maybe Later only dismisses the alert and records a dismissal. The configured cooldown starts when the pre-prompt is presented. Omit `prePromptTitle` to request the system dialog directly.
 
 To reset review activity when your app’s public version changes, opt in on its controller:
 
@@ -302,7 +316,7 @@ The SDK's own automatic prompts set the precedent — match it when you trigger 
 
 ## Status
 
-Current release: **2.1.0**. Swift Package Manager versions come from Git tags; `Package.swift` does not contain a package version. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **2.2.0**. Swift Package Manager versions come from Git tags; `Package.swift` does not contain a package version. See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
