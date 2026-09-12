@@ -8,12 +8,13 @@ import StoreKit
 /// tests instead).
 final class MockStoreProvider: StoreProviding, @unchecked Sendable {
     var productsError: Error?
+    var productsResult: [Product] = []
     var unfinishedTransactionsResult: [VerificationResult<Transaction>] = []
     private(set) var finishCallCount = 0
 
     func products(for identifiers: [String]) async throws -> [Product] {
         if let productsError { throw productsError }
-        return []
+        return productsResult
     }
 
     func purchase(_ product: Product) async throws -> Product.PurchaseResult {

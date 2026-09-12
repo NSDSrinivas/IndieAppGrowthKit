@@ -67,6 +67,20 @@ final class TipStoreStoreKitTestTests: XCTestCase {
         XCTAssertEqual(loadedIdentifiers, Set(productIdentifiers))
     }
 
+    func testLoadProductsOrdersTipsByIncreasingPrice() async throws {
+        let realStore = TipStore(productIdentifiers: productIdentifiers)
+        try await startOrSkipIfUnavailable(realStore)
+        let loadedProducts = await realStore.products
+        let mock = MockStoreProvider()
+        mock.productsResult = loadedProducts.sorted { $0.price > $1.price }
+        let store = TipStore(productIdentifiers: productIdentifiers, storeProvider: mock)
+
+        try await store.loadProducts()
+
+        let orderedIdentifiers = await store.products.map(\.id)
+        XCTAssertEqual(orderedIdentifiers, productIdentifiers)
+    }
+
     func testSuccessfulPurchaseIsFinished() async throws {
         let store = TipStore(productIdentifiers: productIdentifiers)
         try await startOrSkipIfUnavailable(store)

@@ -10,7 +10,10 @@ final class TipJarViewSupportTests: XCTestCase {
         XCTAssertNotEqual(TipJarCompletion.failed("x"), .failed("y"))
     }
 
-    func testRepositoryLinkIsAGitHubURL() {
-        XCTAssertEqual(IndieAppGrowthKitLinks.repository.host, "github.com")
+    func testRepositoryLinkPointsToSDKRepository() {
+        XCTAssertEqual(
+            IndieAppGrowthKitLinks.repository.absoluteString,
+            "https://github.com/NSDSrinivas/IndieAppGrowthKit"
+        )
     }
 }

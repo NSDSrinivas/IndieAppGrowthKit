@@ -4,9 +4,18 @@ All notable changes to Indie App Growth Kit are documented here. Releases are ta
 
 ## Unreleased
 
+### Added
+
+- Optional `AutomaticReviewPromptController(resetOnAppVersionChange: true)` resets review activity and cooldowns when the consumer app’s public version changes. Defaults to false; preserves the install date and uses the first observed version as a baseline.
+
 ### Changed
 
 - Centralized release and migration details in this changelog, with a README callout linking here.
+
+### Fixed
+
+- Corrected the Tip Jar attribution link to the SDK repository.
+- Ordered loaded tip products by increasing price, using product ID to break ties.
 
 ## [2.0.0] - 2026-09-12
 

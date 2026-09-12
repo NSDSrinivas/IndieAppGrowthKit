@@ -74,6 +74,22 @@ public actor AutomaticTriggerEngine {
         persist()
     }
 
+    /// Tracks the host version alongside this namespace's state. The first known
+    /// version establishes a baseline, preserving state created by older SDKs.
+    func prepareForAppVersion(_ version: String?, resetOnChange: Bool) {
+        guard let version = version?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !version.isEmpty else { return }
+        let versionKey = storageKey + ".appVersion"
+        let previous = userDefaults.string(forKey: versionKey)
+        if resetOnChange, let previous, previous != version {
+            let installDate = cachedState.installDate
+            cachedState = .empty
+            cachedState.installDate = installDate
+            persist()
+        }
+        userDefaults.set(version, forKey: versionKey)
+    }
+
     /// Whether every condition is satisfied (AND-combined).
     public func evaluate(_ conditions: [TriggerCondition]) -> Bool {
         conditions.allSatisfy(isSatisfied)

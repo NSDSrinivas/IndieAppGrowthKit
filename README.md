@@ -163,6 +163,19 @@ ContentView()
 
 Passing `prePromptTitle` shows an optional alert with **Rate App** and **Maybe Later**. Rate App requests Apple’s review dialog; Maybe Later only dismisses the alert and records a dismissal. The configured cooldown starts when the pre-prompt is presented. Omit `prePromptTitle` to request the system dialog directly.
 
+To reset review activity when your app’s public version changes, opt in on its controller:
+
+```swift
+let reviewPromptController = AutomaticReviewPromptController(
+    conditions: [.launchCount(atLeast: 5), .daysSinceLastPrompt(atLeast: 30)],
+    resetOnAppVersionChange: true
+)
+```
+
+The default is `false`, preserving review state across app updates. With `true`, a change to the host app’s `CFBundleShortVersionString` clears review launch/session counts, dismissals, custom signals, and the last-prompt cooldown. The original install date is preserved. Conditions still apply, so this example requires five launches on the new version. Build-number and SDK-version changes alone do not reset state.
+
+The first known version establishes a baseline without clearing existing state, including when adopting this option in an existing installation. Missing version information leaves state untouched. Version tracking happens before controller reads and writes, and persists across launches. Tip and What’s New state are unaffected.
+
 ### Sharing
 
 `ShareAppButton` wraps SwiftUI's native `ShareLink` (system share sheet, AirDrop/Messages/Mail/etc. included), pre-populated with your App Store link:

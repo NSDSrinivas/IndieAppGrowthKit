@@ -9,6 +9,7 @@ public actor TipStore {
     private let productIdentifiers: [String]
     private var transactionListenerTask: Task<Void, Never>?
 
+    /// Loaded tips ordered by increasing price, with product ID breaking ties.
     public private(set) var products: [Product] = []
 
     public init(productIdentifiers: [String], storeProvider: any StoreProviding = StoreKitProvider()) {
@@ -36,7 +37,10 @@ public actor TipStore {
     }
 
     public func loadProducts() async throws {
-        products = try await storeProvider.products(for: productIdentifiers)
+        products = try await storeProvider.products(for: productIdentifiers).sorted {
+            if $0.price == $1.price { return $0.id < $1.id }
+            return $0.price < $1.price
+        }
     }
 
     public func product(withIdentifier identifier: String) -> Product? {
