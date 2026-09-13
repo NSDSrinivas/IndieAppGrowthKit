@@ -58,7 +58,31 @@ public struct TipJarView<TierContent: View>: View {
                 ConfettiView()
             }
         }
+        .overlay {
+            if purchasingIdentifier != nil {
+                purchaseProgressOverlay
+            }
+        }
         .task { await load() }
+    }
+
+    private var purchaseProgressOverlay: some View {
+        ZStack {
+            theme.colors.background.opacity(0.8)
+                .ignoresSafeArea()
+
+            ProgressView(theme.strings.purchaseProgressTitle)
+                .font(theme.typography.body)
+                .foregroundStyle(theme.colors.primaryText)
+                .tint(theme.colors.accent)
+                .padding(theme.metrics.padding)
+                .background(
+                    theme.colors.surface,
+                    in: RoundedRectangle(cornerRadius: theme.metrics.cornerRadius)
+                )
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.updatesFrequently)
     }
 
     @ViewBuilder

@@ -8,6 +8,7 @@ final class TipJarThemeTests: XCTestCase {
         XCTAssertFalse(theme.strings.tipJarTitle.isEmpty)
         XCTAssertFalse(theme.strings.tipJarSubtitle.isEmpty)
         XCTAssertFalse(theme.strings.purchaseButtonTitle.isEmpty)
+        XCTAssertFalse(theme.strings.purchaseProgressTitle.isEmpty)
         XCTAssertFalse(theme.strings.poweredByText.isEmpty)
     }
 

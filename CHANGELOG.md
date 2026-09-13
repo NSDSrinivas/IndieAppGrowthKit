@@ -4,6 +4,12 @@ All notable changes to Indie App Growth Kit are documented here. Releases are ta
 
 ## Unreleased
 
+## [2.3.0] - 2026-09-13
+
+### Added
+
+- The Tip Jar now shows a blocking, themed progress loader for the full purchase attempt after a user selects a tip. Its default “Processing tip…” label can be customized with `TipJarTheme.Strings.purchaseProgressTitle`; purchase completion continues to report success, failure, cancellation, or pending status to the consuming app.
+
 ## [2.2.0] - 2026-09-12
 
 ### Added
