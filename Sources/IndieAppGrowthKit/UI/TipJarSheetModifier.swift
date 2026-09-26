@@ -8,22 +8,40 @@ struct TipJarSheetContent: View {
     let onCompletion: (TipJarCompletion) -> Void
 
     var body: some View {
+        #if os(macOS)
+        // AppKit sheets do not reliably display a navigation toolbar.
+        VStack(spacing: 0) {
+            HStack {
+                Spacer()
+                cancelButton
+                    .keyboardShortcut(.cancelAction)
+            }
+            .padding(theme.metrics.padding)
+
+            TipJarView(store: store, onCompletion: onCompletion)
+        }
+        .background(theme.colors.background)
+        .frame(minWidth: 400, idealWidth: 480, minHeight: 360, idealHeight: 560)
+        #else
         NavigationStack {
             TipJarView(store: store, onCompletion: onCompletion)
                 .toolbar {
                     ToolbarItem(placement: trailingButtonPlacement) {
-                        Button(theme.strings.closeButtonTitle) {
-                            isPresented = false
-                        }
+                        cancelButton
                     }
                 }
         }
         #if os(iOS)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        #elseif os(macOS)
-        .frame(minWidth: 400, idealWidth: 480, minHeight: 360, idealHeight: 560)
         #endif
+        #endif
+    }
+
+    private var cancelButton: some View {
+        Button(theme.strings.closeButtonTitle) {
+            isPresented = false
+        }
     }
 }
 

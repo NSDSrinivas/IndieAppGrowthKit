@@ -4,6 +4,12 @@ All notable changes to Indie App Growth Kit are documented here. Releases are ta
 
 ## Unreleased
 
+## [2.4.1] - 2026-09-26
+
+### Fixed
+
+- The shared Tip Jar sheet now renders its themed Cancel button directly in the macOS sheet header instead of relying on a navigation toolbar that may not appear. Both automatic and on-demand sheets can also be dismissed with Escape.
+
 ## [2.4.0] - 2026-09-26
 
 ### Added
