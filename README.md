@@ -37,13 +37,13 @@ Add Indie App Growth Kit to your project via Swift Package Manager.
 https://github.com/NSDSrinivas/IndieAppGrowthKit.git
 ```
 
-Choose "Up to Next Major Version" starting at `2.3.0` (or pin to a specific released tag), then add the `IndieAppGrowthKit` library product to your app target.
+Choose "Up to Next Major Version" starting at `2.4.0` (or pin to a specific released tag), then add the `IndieAppGrowthKit` library product to your app target.
 
 **Or, in another package's `Package.swift`:**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", from: "2.3.0")
+    .package(url: "https://github.com/NSDSrinivas/IndieAppGrowthKit.git", from: "2.4.0")
 ],
 targets: [
     .target(
@@ -137,6 +137,8 @@ ContentView()
         // handle completion
     }
 ```
+
+Automatic prompts first ask whether the user wants to support the app by tipping. “Maybe Later” dismisses the alert; accepting opens the Tip Jar sheet. Both automatic and on-demand sheets include a Cancel button, and iOS offers medium and large sheet sizes with scrollable tip options. Declining the alert or closing the sheet without a successful tip counts toward dismissal conditions; successful tips do not. Purchase completion callbacks still report purchase attempts only.
 
 `await IndieAppGrowthKit.tipStore.tipHistory()` returns a `TipHistory` (tip count + totals by currency) if you want to show the user their own tipping history.
 
@@ -271,7 +273,7 @@ ContentView()
 
 ### Theming
 
-Bundled views (`TipJarView`, `CrossPromotionView`, `WhatsNewView`) use `TipJarTheme` for shared styling via the `.tipJarTheme(_:)` environment modifier. The theme exposes colors, typography, metrics, and tip-jar copy. Review pre-prompt title and message are configured on its modifier; its button labels are “Rate App” and “Maybe Later”. Apply it as high up your view hierarchy as you want the theme to reach; omit it entirely to use `.default`, which already tracks the system's light/dark appearance automatically.
+Bundled views (`TipJarView`, `CrossPromotionView`, `WhatsNewView`) use `TipJarTheme` for shared styling via the `.tipJarTheme(_:)` environment modifier. The theme exposes colors, typography, metrics, and tip-jar copy. Customize the automatic tip alert with `Strings.automaticTipPromptTitle`, `automaticTipPromptMessage`, `automaticTipPromptSupportButtonTitle`, and `automaticTipPromptDeclineButtonTitle`; `closeButtonTitle` controls the sheet’s Cancel label. Review pre-prompt title and message are configured on its modifier; its button labels are “Rate App” and “Maybe Later”. Apply it as high up your view hierarchy as you want the theme to reach; omit it entirely to use `.default`, which already tracks the system's light/dark appearance automatically.
 
 ```swift
 ContentView()
@@ -309,14 +311,14 @@ The SDK's own automatic prompts set the precedent — match it when you trigger 
 
 | View | Automatic presentation | On-demand presentation |
 | --- | --- | --- |
-| `TipJarView` | `.sheet` (via `.automaticTipPrompt`) | `.tipJarSheet(_:)` |
+| `TipJarView` | Confirmation `.alert`, then `.sheet` (via `.automaticTipPrompt`) | `.tipJarSheet(_:)` |
 | Review pre-prompt | `.alert` (via `.automaticReviewPrompt`) | n/a — `ReviewPrompt.request()` is a system dialog |
 | `WhatsNewView` | `.sheet` (via `.automaticWhatsNew`) | n/a — inherently version-triggered |
 | `CrossPromotionView` | — (no automatic trigger) | Push (`NavigationLink`) — it's a static list, not a modal flow |
 
 ## Status
 
-Current release: **2.3.0**. Swift Package Manager versions come from Git tags; `Package.swift` does not contain a package version. See [CHANGELOG.md](CHANGELOG.md).
+Current release: **2.4.0**. Swift Package Manager versions come from Git tags; `Package.swift` does not contain a package version. See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

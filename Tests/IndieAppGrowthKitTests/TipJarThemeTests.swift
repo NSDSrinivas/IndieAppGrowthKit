@@ -10,6 +10,10 @@ final class TipJarThemeTests: XCTestCase {
         XCTAssertFalse(theme.strings.purchaseButtonTitle.isEmpty)
         XCTAssertFalse(theme.strings.purchaseProgressTitle.isEmpty)
         XCTAssertFalse(theme.strings.poweredByText.isEmpty)
+        XCTAssertFalse(theme.strings.automaticTipPromptTitle.isEmpty)
+        XCTAssertFalse(theme.strings.automaticTipPromptMessage.isEmpty)
+        XCTAssertFalse(theme.strings.automaticTipPromptSupportButtonTitle.isEmpty)
+        XCTAssertFalse(theme.strings.automaticTipPromptDeclineButtonTitle.isEmpty)
     }
 
     func testCustomThemeOverridesEveryField() {
@@ -28,6 +32,7 @@ final class TipJarThemeTests: XCTestCase {
         XCTAssertNotEqual(custom, .default)
         XCTAssertEqual(custom.strings.tipJarTitle, "Buy me a coffee")
         XCTAssertEqual(custom.metrics.cornerRadius, 0)
+        XCTAssertEqual(custom.strings.automaticTipPromptTitle, TipJarTheme.default.strings.automaticTipPromptTitle)
     }
 
     func testEnvironmentDefaultsToDefaultTheme() {

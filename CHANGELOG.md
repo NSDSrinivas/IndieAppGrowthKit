@@ -4,6 +4,17 @@ All notable changes to Indie App Growth Kit are documented here. Releases are ta
 
 ## Unreleased
 
+## [2.4.0] - 2026-09-26
+
+### Added
+
+- Automatic tip prompts first ask whether users want to support the app by tipping, with themed confirmation and “Maybe Later” actions.
+
+### Changed
+
+- Automatic and on-demand Tip Jars share a sheet with a visible Cancel button. On iOS, sheets offer medium and large sizes with scrollable tip options.
+- Declining the confirmation or closing an automatic Tip Jar without tipping records a dismissal; successful tips no longer count as dismissals. Purchase completion callbacks retain their existing per-attempt behavior.
+
 ## [2.3.0] - 2026-09-13
 
 ### Added

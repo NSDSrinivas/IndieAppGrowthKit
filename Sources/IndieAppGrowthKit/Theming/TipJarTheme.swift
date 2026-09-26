@@ -64,6 +64,10 @@ public struct TipJarTheme: Equatable, Sendable {
         public var purchaseProgressTitle: String
         public var poweredByText: String
         public var closeButtonTitle: String
+        public var automaticTipPromptTitle: String
+        public var automaticTipPromptMessage: String
+        public var automaticTipPromptSupportButtonTitle: String
+        public var automaticTipPromptDeclineButtonTitle: String
 
         public init(
             tipJarTitle: String,
@@ -71,7 +75,11 @@ public struct TipJarTheme: Equatable, Sendable {
             purchaseButtonTitle: String,
             poweredByText: String,
             closeButtonTitle: String = "Cancel",
-            purchaseProgressTitle: String = "Processing tip…"
+            purchaseProgressTitle: String = "Processing tip…",
+            automaticTipPromptTitle: String = "Enjoying this app?",
+            automaticTipPromptMessage: String = "Would you like to support its development with a tip?",
+            automaticTipPromptSupportButtonTitle: String = "Support",
+            automaticTipPromptDeclineButtonTitle: String = "Maybe Later"
         ) {
             self.tipJarTitle = tipJarTitle
             self.tipJarSubtitle = tipJarSubtitle
@@ -79,6 +87,10 @@ public struct TipJarTheme: Equatable, Sendable {
             self.purchaseProgressTitle = purchaseProgressTitle
             self.poweredByText = poweredByText
             self.closeButtonTitle = closeButtonTitle
+            self.automaticTipPromptTitle = automaticTipPromptTitle
+            self.automaticTipPromptMessage = automaticTipPromptMessage
+            self.automaticTipPromptSupportButtonTitle = automaticTipPromptSupportButtonTitle
+            self.automaticTipPromptDeclineButtonTitle = automaticTipPromptDeclineButtonTitle
         }
     }
 

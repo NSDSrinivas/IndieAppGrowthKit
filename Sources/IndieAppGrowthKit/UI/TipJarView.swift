@@ -36,22 +36,24 @@ public struct TipJarView<TierContent: View>: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: theme.metrics.spacing) {
-            Text(theme.strings.tipJarTitle)
-                .font(theme.typography.title)
-                .foregroundStyle(theme.colors.primaryText)
-                .accessibilityAddTraits(.isHeader)
+        ScrollView {
+            VStack(alignment: .leading, spacing: theme.metrics.spacing) {
+                Text(theme.strings.tipJarTitle)
+                    .font(theme.typography.title)
+                    .foregroundStyle(theme.colors.primaryText)
+                    .accessibilityAddTraits(.isHeader)
 
-            Text(theme.strings.tipJarSubtitle)
-                .font(theme.typography.body)
-                .foregroundStyle(theme.colors.secondaryText)
+                Text(theme.strings.tipJarSubtitle)
+                    .font(theme.typography.body)
+                    .foregroundStyle(theme.colors.secondaryText)
 
-            content
+                content
 
-            poweredByLink
+                poweredByLink
+            }
+            .padding(theme.metrics.padding)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
         }
-        .padding(theme.metrics.padding)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(theme.colors.background)
         .overlay {
             if showConfetti {

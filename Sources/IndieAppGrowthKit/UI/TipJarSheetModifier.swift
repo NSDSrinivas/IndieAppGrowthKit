@@ -1,7 +1,33 @@
 import SwiftUI
 
-private struct TipJarSheetModifier: ViewModifier {
+/// The shared sheet contents used by both automatic and on-demand entry points.
+struct TipJarSheetContent: View {
     @Environment(\.tipJarTheme) private var theme
+    @Binding var isPresented: Bool
+    let store: TipStore
+    let onCompletion: (TipJarCompletion) -> Void
+
+    var body: some View {
+        NavigationStack {
+            TipJarView(store: store, onCompletion: onCompletion)
+                .toolbar {
+                    ToolbarItem(placement: trailingButtonPlacement) {
+                        Button(theme.strings.closeButtonTitle) {
+                            isPresented = false
+                        }
+                    }
+                }
+        }
+        #if os(iOS)
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+        #elseif os(macOS)
+        .frame(minWidth: 400, idealWidth: 480, minHeight: 360, idealHeight: 560)
+        #endif
+    }
+}
+
+private struct TipJarSheetModifier: ViewModifier {
     @Binding var isPresented: Bool
     let store: TipStore
     let onCompletion: (TipJarCompletion) -> Void
@@ -9,18 +35,9 @@ private struct TipJarSheetModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .sheet(isPresented: $isPresented) {
-                NavigationStack {
-                    TipJarView(store: store) { completion in
-                        if case .success = completion { isPresented = false }
-                        onCompletion(completion)
-                    }
-                    .toolbar {
-                        ToolbarItem(placement: trailingButtonPlacement) {
-                            Button(theme.strings.closeButtonTitle) {
-                                isPresented = false
-                            }
-                        }
-                    }
+                TipJarSheetContent(isPresented: $isPresented, store: store) { completion in
+                    if case .success = completion { isPresented = false }
+                    onCompletion(completion)
                 }
             }
     }
